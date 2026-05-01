@@ -4,10 +4,9 @@
 
 @layer base {
   :root {
-    --color-primary-900: #152C4D;
-    --color-primary-800: #1E3E6E;
-    --color-primary-700: #2A5285;
-    --color-primary-600: #3466A4;
+    --primary-main: #152C4D;
+    --primary-light: #3466A4;
+    --primary-dark: #0F1F36;
     
     --color-healthcare-600: #10B981;
     --color-healthcare-500: #34D399;
@@ -20,42 +19,79 @@
     
     --color-govBackground: #F4F7FB;
     
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-on-dark: #FFFFFF;
+    --text-on-dark-dim: #E2E8F0;
+    
     --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
     --font-body: 'Inter', sans-serif;
     
-    --radius-gov: 18px; /* Softer radius matching reference */
-    --shadow-gov-card: 0px 4px 20px rgba(0, 0, 0, 0.03), 0px 2px 8px rgba(0, 0, 0, 0.02); /* Extremely soft SaaS shadow */
+    --radius-gov: 18px;
+    --shadow-gov-card: 0px 4px 20px rgba(0, 0, 0, 0.03), 0px 2px 8px rgba(0, 0, 0, 0.02);
+    
+    --card-padding: 1.5rem; /* Normal density */
+  }
+
+  /* Themes */
+  .theme-forest {
+    --primary-main: #064E3B;
+    --primary-light: #10B981;
+    --primary-dark: #062F24;
+  }
+  .theme-royal {
+    --primary-main: #4C1D95;
+    --primary-light: #8B5CF6;
+    --primary-dark: #2E1065;
+  }
+
+  /* Densities */
+  .density-compact { --card-padding: 0.75rem; }
+  .density-spacieux { --card-padding: 2.5rem; }
+
+  .dark {
+    --color-govBackground: #0F172A;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --shadow-gov-card: 0px 4px 20px rgba(0, 0, 0, 0.2);
   }
 
   body {
-    @apply bg-govBackground text-primary-900 font-body antialiased;
+    background-color: var(--color-govBackground);
+    color: var(--text-primary);
+    @apply font-body antialiased transition-colors duration-300;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
+    color: var(--text-primary);
   }
+
+  .text-on-dark { color: var(--text-on-dark); }
+  .text-on-dark-dim { color: var(--text-on-dark-dim); }
 }
 
 @layer components {
   .gov-card {
-    @apply bg-white rounded-[var(--radius-gov)] shadow-[var(--shadow-gov-card)] border border-slate-100 overflow-hidden transition-all duration-300;
+    @apply bg-white dark:bg-slate-800 rounded-[var(--radius-gov)] shadow-[var(--shadow-gov-card)] border border-slate-100 dark:border-slate-700 overflow-hidden transition-all duration-300;
+    padding: var(--card-padding);
   }
 
-  
   .gov-card:hover {
-    @apply shadow-lg border-slate-300/80;
+    @apply shadow-lg border-slate-300/80 dark:border-slate-500;
   }
   
   .btn-primary {
-    @apply bg-primary-600 text-white px-5 py-2.5 rounded-gov font-bold text-sm hover:bg-primary-700 transition-all duration-200 shadow-md shadow-primary-600/20 active:scale-95;
+    background-color: var(--primary-light);
+    @apply text-white px-5 py-2.5 rounded-gov font-bold text-sm hover:opacity-90 transition-all duration-200 shadow-md active:scale-95;
   }
   
   .btn-secondary {
-    @apply bg-white border border-slate-300 text-primary-900 px-5 py-2.5 rounded-gov font-bold text-sm hover:bg-slate-50 transition-all duration-200 active:scale-95;
+    @apply bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white px-5 py-2.5 rounded-gov font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 active:scale-95;
   }
 
   .form-input {
-    @apply w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#3466A4]/30 focus:border-[#3466A4]/50 transition-all;
+    @apply w-full border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 rounded-xl px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary-light)] focus:ring-opacity-30 focus:border-[var(--primary-light)] transition-all;
   }
 }
 

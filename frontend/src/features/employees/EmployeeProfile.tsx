@@ -1,333 +1,272 @@
-import React, { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../lib/api'
-import {
-  ArrowLeft, Mail, Phone, MapPin, Calendar, Award, TrendingUp,
-  RefreshCw, Edit3, Save, X, Briefcase, Shield, FileText,
-  Clock, CheckCircle, XCircle, AlertCircle, User
-} from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
-import WorkflowVisualizer from '../workflows/WorkflowVisualizer'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-type WorkflowStatus = 'completed' | 'current' | 'upcoming' | 'error'
-
-interface EmployeeData {
-  id?: number
-  first_name?: string
-  last_name?: string
-  cin?: string
-  email?: string
-  phone?: string
-  address?: string
-  birth_date?: string
-  grade?: string
-  department?: string
-  matricule?: string
-  status?: string
-  recruitment_date?: string
-  user?: { name?: string; email?: string }
-}
-
-const MOCK_WORKFLOW: { name: string; label: string; status: WorkflowStatus; date?: string }[] = [
-  { name: 'initiated',             label: 'Promotion initiée',               status: 'completed', date: 'Oct 12, 2024' },
-  { name: 'regional_review',       label: 'Revue Directorate Régionale',      status: 'completed', date: 'Oct 20, 2024' },
-  { name: 'provincial_approval',   label: 'Approbation Provinciale',          status: 'current',   date: 'En cours' },
-  { name: 'ministry_finalization', label: 'Finalisation Ministère',           status: 'upcoming' },
-  { name: 'realized',              label: 'Promotion Réalisée',               status: 'upcoming' },
-]
-
-type Tab = 'profil' | 'carriere' | 'documents' | 'historique'
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  ArrowLeft, Mail, Phone, MapPin, 
+  Award, Calendar, TrendingUp, ShieldCheck,
+  Download, Edit3, Trash2, CheckCircle, 
+  XCircle, AlertCircle, Loader2, User, FileText,
+  ChevronRight, Clock as ClockIcon
+} from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const EmployeeProfile = () => {
-  const { id } = useParams()
-  const queryClient = useQueryClient()
-  const [activeTab, setActiveTab] = useState<Tab>('profil')
-  const [editMode, setEditMode] = useState(false)
-  const [editData, setEditData] = useState<EmployeeData>({})
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('dossier');
+  const [editData, setEditData] = useState<any>(null);
 
-  const { data: employee, isLoading, isError } = useQuery<EmployeeData>({
-    queryKey: ['fonctionnaire', id],
+  const { data: employee, isLoading, isError } = useQuery({
+    queryKey: ['employee', id],
     queryFn: async () => {
-      const res = await api.get(`/fonctionnaires/${id}`)
-      return (res.data?.data || res.data) as EmployeeData
+      const res = await axios.get(`http://localhost:8000/api/fonctionnaires/${id}`);
+      return res.data;
     },
-    enabled: !!id,
-  })
+    enabled: !!id
+  });
 
-  // Sync editData when employee loads (TanStack Query v5 — no onSuccess)
-  useEffect(() => {
-    if (employee) setEditData(employee)
-  }, [employee])
-
-  const updateMutation = useMutation({
-    mutationFn: async (payload: Partial<EmployeeData>) => {
-      const res = await api.patch(`/fonctionnaires/${id}`, payload)
-      return res.data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fonctionnaire', id] })
-      queryClient.invalidateQueries({ queryKey: ['fonctionnaires'] })
-      setEditMode(false)
-    },
-  })
+  const timeline = [
+    { name: 'initiated',             label: 'Promotion initiée',               status: 'completed', date: 'Oct 12, 2024' },
+    { name: 'regional_review',       label: 'Revue Directorate Régionale',      status: 'completed', date: 'Oct 20, 2024' },
+    { name: 'ministerial_approval',  label: 'Approbation Ministérielle',       status: 'current' },
+    { name: 'ministry_finalization', label: 'Finalisation Ministère',           status: 'upcoming' },
+    { name: 'realized',              label: 'Promotion Réalisée',               status: 'upcoming' },
+  ];
 
   if (isLoading) return (
-    <div className="flex flex-col items-center justify-center h-80 animate-slide-up gap-4">
-      <RefreshCw className="animate-spin text-[#3466A4]" size={36} />
-      <p className="text-[#152C4D] font-bold">Chargement du dossier...</p>
+    <div className="h-[60vh] flex flex-col items-center justify-center">
+      <Loader2 className="animate-spin text-blue-600 mb-4" size={40} />
+      <p className="text-[#152C4D] font-bold">Chargement du dossier agent...</p>
     </div>
-  )
+  );
 
   if (isError || !employee) return (
-    <div className="p-8 animate-slide-up">
-      <Link to="/personnel" className="inline-flex items-center text-slate-500 hover:text-[#3466A4] mb-6 font-medium gap-2 transition-colors">
-        <ArrowLeft size={18} /> Retour au répertoire
-      </Link>
-      <div className="bg-red-50 border border-red-100 text-red-600 p-8 rounded-2xl text-center">
-        <AlertCircle size={36} className="mx-auto mb-3 opacity-60" />
-        <p className="font-bold text-lg">Dossier de l'agent non trouvé</p>
-        <p className="text-sm text-red-400 mt-1">Vérifiez que l'API /fonctionnaires/{'{id}'} est disponible.</p>
+    <div className="h-[60vh] flex flex-col items-center justify-center text-center">
+      <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-6">
+        <AlertCircle size={32} />
       </div>
+      <button onClick={() => navigate('/rh/employees')} className="flex items-center gap-2 text-blue-600 font-bold mb-4 hover:underline">
+        <ArrowLeft size={18} /> Retour au répertoire
+      </button>
+      <p className="font-bold text-lg text-slate-800">Dossier de l'agent non trouvé</p>
+      <p className="text-sm text-slate-400 mt-1 font-medium">Vérifiez que l'API est disponible ou que l'ID est correct.</p>
     </div>
-  )
+  );
 
-  const tabs: { key: Tab, label: string, icon: React.ReactNode }[] = [
-    { key: 'profil',     label: 'Profil',     icon: <User size={16} /> },
+  const tabs = [
+    { key: 'dossier',    label: 'Dossier Administratif', icon: <User size={16} /> },
     { key: 'carriere',   label: 'Carrière',   icon: <TrendingUp size={16} /> },
     { key: 'documents',  label: 'Documents',  icon: <FileText size={16} /> },
-    { key: 'historique', label: 'Historique', icon: <Clock size={16} /> },
-  ]
-
-  const firstName = employee.first_name || employee.user?.name || 'Agent'
-  const lastName  = employee.last_name || ''
-  const name     = `${firstName} ${lastName}`.trim()
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0) || ''}`.toUpperCase()
+    { key: 'historique', label: 'Historique', icon: <ClockIcon size={16} /> },
+  ];
 
   return (
-    <div className="animate-slide-up space-y-6">
-      {/* Back */}
-      <Link to="/personnel" className="inline-flex items-center text-slate-500 hover:text-[#3466A4] font-medium gap-2 transition-colors text-sm">
-        <ArrowLeft size={16} /> Retour au répertoire du personnel
-      </Link>
-
-      {/* Hero Card */}
-      <div className="bg-gradient-to-r from-[#152C4D] to-[#1E3E6E] rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
-        <div className="absolute inset-0 bg-cover bg-center opacity-5" style={{ backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Larache_main_square.jpg/1280px-Larache_main_square.jpg')" }} />
-        <div className="relative flex items-center gap-8 flex-wrap">
-          {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl border-4 border-white/20 flex-shrink-0">
-            {initials || 'AG'}
+    <div className="animate-slide-up space-y-8 pb-20">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="flex items-center gap-6">
+          <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-3xl shadow-xl shadow-blue-900/20">
+            {employee.name.charAt(0)}
           </div>
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <h1 className="text-3xl font-extrabold tracking-tight">{name}</h1>
-            <p className="text-blue-200 text-lg mt-1 font-medium">{employee.grade || 'Grade non défini'}</p>
-            <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
-              {employee.matricule && <span className="bg-white/10 px-3 py-1 rounded-full font-mono">Mat: {employee.matricule}</span>}
-              {employee.cin       && <span className="bg-white/10 px-3 py-1 rounded-full font-mono">CIN: {employee.cin}</span>}
-              {employee.department && <span className="bg-white/10 px-3 py-1 rounded-full">{employee.department}</span>}
-              <span className={`px-3 py-1 rounded-full font-bold ${
-                employee.status === 'active'  ? 'bg-emerald-500/20 text-emerald-300' :
-                employee.status === 'conge'   ? 'bg-amber-500/20 text-amber-300' :
-                                                'bg-slate-500/20 text-slate-300'
-              }`}>
-                {employee.status === 'active' ? '● Actif' : employee.status === 'conge' ? '● En congé' : '● Retraité'}
-              </span>
-            </div>
+          <div>
+            <button onClick={() => navigate('/rh/employees')} className="flex items-center gap-2 text-slate-400 font-bold text-xs mb-3 hover:text-blue-600 transition-colors uppercase tracking-widest">
+              <ArrowLeft size={16} /> Retour au répertoire du personnel
+            </button>
+            <h1 className="text-4xl font-black text-[#152C4D] tracking-tight">{employee.name}</h1>
+            <p className="text-blue-600 text-lg mt-1 font-bold">{employee.grade || 'Grade non défini'}</p>
           </div>
-          {/* Edit Actions */}
-          <div className="flex flex-col gap-2">
-            {!editMode ? (
-              <button onClick={() => { setEditMode(true); setEditData(employee) }}
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all border border-white/20">
-                <Edit3 size={15} /> Modifier
-              </button>
-            ) : (
-              <div className="flex gap-2 flex-wrap">
-                <button onClick={() => updateMutation.mutate(editData)} disabled={updateMutation.isPending}
-                  className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all">
-                  {updateMutation.isPending ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-                  Sauvegarder
-                </button>
-                <button onClick={() => setEditMode(false)}
-                  className="flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium">
-                  <X size={14} /> Annuler
-                </button>
-              </div>
-            )}
-          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-xs font-black uppercase px-4 py-2 rounded-xl border-2 ${
+            employee.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
+            employee.status === 'conge' ? 'bg-amber-50 text-amber-700 border-amber-100' : 
+            'bg-slate-50 text-slate-400 border-slate-100'
+          }`}>
+            {employee.status === 'active' ? '● Actif' : employee.status === 'conge' ? '● En congé' : '● Retraité'}
+          </span>
+          <button className="p-3 bg-white border-2 border-slate-100 rounded-xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all shadow-sm">
+            <Edit3 size={20} />
+          </button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 bg-white rounded-2xl p-1 shadow-sm border border-slate-100 w-fit">
-        {tabs.map(t => (
-          <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              activeTab === t.key ? 'bg-[#152C4D] text-white shadow-sm' : 'text-slate-500 hover:text-[#152C4D] hover:bg-slate-50'
-            }`}>
-            {t.icon} {t.label}
+      {/* Navigation Tabs */}
+      <div className="flex bg-white p-1.5 rounded-2xl border-2 border-slate-100 w-fit">
+        {tabs.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === tab.key ? 'bg-[#152C4D] text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            {tab.icon}
+            {tab.label}
           </button>
         ))}
       </div>
 
-      {/* ── Profil ─────────────────────────────────────── */}
-      {activeTab === 'profil' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="gov-card p-6 space-y-5">
-            <h3 className="font-bold text-[#152C4D] text-lg border-b border-slate-100 pb-3">Informations personnelles</h3>
-            <ProfileField label="Email professionnel" icon={<Mail size={16} />}
-              value={editMode ? editData.email : employee.email} editable={editMode}
-              onChange={(v: string) => setEditData(d => ({ ...d, email: v }))} />
-            <ProfileField label="Téléphone" icon={<Phone size={16} />}
-              value={editMode ? editData.phone : employee.phone} editable={editMode}
-              onChange={(v: string) => setEditData(d => ({ ...d, phone: v }))} />
-            <ProfileField label="Adresse" icon={<MapPin size={16} />}
-              value={editMode ? editData.address : employee.address} editable={editMode}
-              onChange={(v: string) => setEditData(d => ({ ...d, address: v }))} placeholder="Adresse de résidence" />
-            <ProfileField label="Date de naissance" icon={<Calendar size={16} />}
-              value={employee.birth_date ? new Date(employee.birth_date).toLocaleDateString('fr-MA') : '—'}
-              editable={false} />
-          </div>
-          <div className="gov-card p-6 space-y-5">
-            <h3 className="font-bold text-[#152C4D] text-lg border-b border-slate-100 pb-3">Informations professionnelles</h3>
-            <ProfileField label="Grade / Fonction" icon={<Briefcase size={16} />}
-              value={editMode ? editData.grade : employee.grade} editable={editMode}
-              onChange={(v: string) => setEditData(d => ({ ...d, grade: v }))} />
-            <ProfileField label="Département" icon={<MapPin size={16} />}
-              value={editMode ? editData.department : employee.department} editable={editMode}
-              onChange={(v: string) => setEditData(d => ({ ...d, department: v }))} />
-            <ProfileField label="Matricule" icon={<Shield size={16} />}
-              value={employee.matricule || '—'} editable={false} />
-            <ProfileField label="Date de recrutement" icon={<Calendar size={16} />}
-              value={employee.recruitment_date ? new Date(employee.recruitment_date).toLocaleDateString('fr-MA') : '—'}
-              editable={false} />
-          </div>
-        </div>
-      )}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Left Column */}
+        <div className="lg:col-span-8 space-y-8">
+          
+          {activeTab === 'dossier' && (
+            <div className="gov-card p-8">
+              <h3 className="text-xl font-bold text-[#152C4D] mb-8 flex items-center gap-3">
+                <ShieldCheck size={22} className="text-blue-600" />
+                Informations administratives
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                <ProfileField label="Matricule / CIN" value={employee.cin} icon={<Award size={16} />} />
+                <ProfileField label="Email professionnel" value={employee.email} icon={<Mail size={16} />} />
+                <ProfileField label="Téléphone" value={employee.phone} icon={<Phone size={16} />} />
+                <ProfileField label="Adresse" value={employee.address} icon={<MapPin size={16} />} />
+                <ProfileField label="Département" value={employee.department} icon={<MapPin size={16} />} />
+                <ProfileField label="Date de recrutement" value={employee.hiring_date} icon={<Calendar size={16} />} />
+              </div>
+            </div>
+          )}
 
-      {/* ── Carrière ────────────────────────────────────── */}
-      {activeTab === 'carriere' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <StatCard icon={<Award size={24} className="text-blue-500" />}    label="Échelon actuel"   value="Échelon 3" bg="bg-blue-50" />
-            <StatCard icon={<TrendingUp size={24} className="text-emerald-500" />} label="Prochaine promotion" value="Oct 2025"  bg="bg-emerald-50" />
-            <StatCard icon={<Calendar size={24} className="text-purple-500" />} label="Années de service" value="8 ans"     bg="bg-purple-50" />
+          {activeTab === 'carriere' && (
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StatCard icon={<Award size={24} className="text-blue-500" />}    label="Échelon actuel"   value="Échelon 3" bg="bg-blue-50" />
+                <StatCard icon={<TrendingUp size={24} className="text-emerald-500" />} label="Dernière Notation" value="18.5/20"  bg="bg-emerald-50" />
+                <StatCard icon={<Calendar size={24} className="text-purple-500" />} label="Années de service" value="8 ans"     bg="bg-purple-50" />
+              </div>
+
+              <div className="gov-card p-8">
+                <h3 className="text-xl font-bold text-[#152C4D] mb-8">Processus de Promotion en cours</h3>
+                <div className="relative">
+                  <div className="absolute top-0 bottom-0 right-4 w-[2px] bg-slate-100"></div>
+                  <div className="space-y-10">
+                    {timeline.map((item, i) => (
+                      <div key={i} className="relative flex items-center gap-8 group">
+                        <div className={`w-8 h-8 rounded-full border-4 border-white shadow-md z-10 shrink-0 transition-transform group-hover:scale-125 ${
+                          item.status === 'completed' ? 'bg-emerald-500' : item.status === 'current' ? 'bg-blue-500 animate-pulse' : 'bg-slate-200'
+                        }`}></div>
+                        <div className="flex-1 text-right">
+                          <p className={`font-bold text-sm ${item.status === 'completed' ? 'text-emerald-600' : 'text-slate-800'}`}>{item.label}</p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{item.date || 'En attente'}</p>
+                        </div>
+                        {item.status === 'current' && (
+                          <button className="flex items-center gap-2 text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 hover:bg-blue-600 hover:text-white transition-all">
+                            <CheckCircle size={16} /> Approuver l'étape (Admin)
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'documents' && (
+            <div className="gov-card p-8">
+              <h3 className="text-xl font-bold text-[#152C4D] mb-8">Archive des documents</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { name: 'Arrêté de recrutement', date: '2016-01-15', status: 'disponible' },
+                  { name: 'Feuille de notation 2024', date: '2024-12-10', status: 'disponible' },
+                  { name: 'Attestation de travail', date: '2025-02-01', status: 'disponible' },
+                  { name: 'Contrat de promotion — Échelon 3', date: '2023-07-01', status: 'en_attente' },
+                ].map((doc, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 rounded-2xl border-2 border-slate-50 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 shadow-sm group-hover:scale-110 transition-transform">
+                        <FileText size={20} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">{doc.name}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">{doc.date}</p>
+                      </div>
+                    </div>
+                    {doc.status === 'disponible' ? (
+                      <button className="text-xs text-blue-600 hover:underline font-bold uppercase tracking-widest">Télécharger</button>
+                    ) : (
+                      <span className="text-[9px] font-black text-amber-600 uppercase bg-amber-50 px-2 py-1 rounded-lg">En attente</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column */}
+        <div className="lg:col-span-4 space-y-8">
+          <div className="gov-card p-8">
+            <h3 className="text-lg font-bold text-[#152C4D] mb-6">Actions rapides</h3>
+            <div className="space-y-3">
+              <QuickAction label="Générer Attestation de travail" color="blue" />
+              <QuickAction label="Générer Attestation de salaire" color="indigo" />
+              <QuickAction label="Déclarer un départ en congé" color="amber" />
+              <div className="pt-4 border-t border-slate-100">
+                <button className="w-full flex items-center justify-center gap-2 py-3 bg-rose-50 text-rose-600 rounded-2xl font-bold text-sm hover:bg-rose-600 hover:text-white transition-all">
+                  <Trash2 size={18} /> Supprimer le dossier
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="gov-card p-6">
-            <h3 className="font-bold text-[#152C4D] text-lg mb-6 flex items-center gap-2">
-              <TrendingUp size={20} className="text-[#3466A4]" />
-              Workflow actif : Promotion de grade
-              <span className="ml-2 px-2.5 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full uppercase">En revue</span>
-            </h3>
-            <WorkflowVisualizer steps={MOCK_WORKFLOW} />
-            <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end gap-3">
-              <button className="btn-secondary">Voir le journal d'audit</button>
-              <button className="btn-primary flex items-center gap-2">
-                <CheckCircle size={16} /> Approuver l'étape (Admin)
-              </button>
+
+          <div className="gov-card p-8 bg-slate-50 border-dashed border-2 border-slate-200">
+            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Activités Récentes</h3>
+            <div className="space-y-6">
+              {[
+                { label: 'Promotion à l\'échelon 3 approuvée', by: 'Direction RH', date: 'Oct 2023', icon: <CheckCircle size={16} className="text-emerald-500" /> },
+                { label: 'Mise à jour des coordonnées personnelles', by: 'Admin Système', date: 'Juin 2023', icon: <Edit3 size={16} className="text-blue-500" /> },
+                { label: 'Congé annuel accordé (30 jours)', by: 'Direction RH', date: 'Juil 2022', icon: <AlertCircle size={16} className="text-amber-500" /> },
+              ].map((act, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="shrink-0 mt-1">{act.icon}</div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800 leading-tight">{act.label}</p>
+                    <p className="text-[10px] text-slate-400 font-medium mt-1">{act.by} • {act.date}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      )}
 
-      {/* ── Documents ───────────────────────────────────── */}
-      {activeTab === 'documents' && (
-        <div className="gov-card p-6 space-y-4">
-          <h3 className="font-bold text-[#152C4D] text-lg border-b border-slate-100 pb-3">Documents officiels</h3>
-          {[
-            { name: 'Arrêté de recrutement', date: '2016-01-15', status: 'disponible' },
-            { name: 'Attestation de travail 2024', date: '2024-01-01', status: 'disponible' },
-            { name: 'Fiche de paie — Mars 2025', date: '2025-03-31', status: 'disponible' },
-            { name: 'Contrat de promotion — Échelon 3', date: '2023-07-01', status: 'en_attente' },
-          ].map((doc, i) => (
-            <div key={i} className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-slate-50 border border-slate-100 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <FileText size={18} className="text-blue-500" />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#152C4D] text-sm">{doc.name}</p>
-                  <p className="text-xs text-slate-400">{new Date(doc.date).toLocaleDateString('fr-MA')}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className={`text-xs font-bold px-3 py-1 rounded-full ${doc.status === 'disponible' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
-                  {doc.status === 'disponible' ? '✓ Disponible' : '⏳ En attente'}
-                </span>
-                {doc.status === 'disponible' && (
-                  <button className="text-xs text-blue-600 hover:underline font-medium">Télécharger</button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── Historique ──────────────────────────────────── */}
-      {activeTab === 'historique' && (
-        <div className="gov-card p-6">
-          <h3 className="font-bold text-[#152C4D] text-lg mb-6">Historique des modifications</h3>
-          <div className="relative pl-6 space-y-6 border-l-2 border-slate-100">
-            {[
-              { label: 'Promotion à l\'échelon 3 approuvée', by: 'Direction RH', date: 'Oct 2023', icon: <CheckCircle size={16} className="text-emerald-500" /> },
-              { label: 'Mise à jour des coordonnées personnelles', by: 'Admin Système', date: 'Juin 2023', icon: <Edit3 size={16} className="text-blue-500" /> },
-              { label: 'Congé annuel accordé (30 jours)', by: 'Direction RH', date: 'Juil 2022', icon: <AlertCircle size={16} className="text-amber-500" /> },
-              { label: 'Dossier de recrutement créé', by: 'Système', date: 'Jan 2016', icon: <XCircle size={16} className="text-slate-400" /> },
-            ].map((item, i) => (
-              <div key={i} className="relative">
-                <div className="absolute -left-9 w-5 h-5 bg-white rounded-full border-2 border-slate-200 flex items-center justify-center">
-                  {item.icon}
-                </div>
-                <p className="font-semibold text-[#152C4D] text-sm">{item.label}</p>
-                <p className="text-xs text-slate-400 mt-0.5">Par {item.by} — {item.date}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-function ProfileField({ label, icon, value, editable, onChange, placeholder }: {
-  label: string, icon: React.ReactNode, value?: string, editable: boolean,
-  onChange?: (v: string) => void, placeholder?: string
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <div className="mt-0.5 text-slate-400 flex-shrink-0">{icon}</div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{label}</p>
-        {editable ? (
-          <input
-            value={value || ''}
-            onChange={e => onChange?.(e.target.value)}
-            placeholder={placeholder || label}
-            className="form-input"
-          />
-        ) : (
-          <p className="text-sm text-[#152C4D] font-semibold truncate">
-            {value || <span className="text-slate-300 font-normal italic">Non renseigné</span>}
-          </p>
-        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-function StatCard({ icon, label, value, bg }: { icon: React.ReactNode, label: string, value: string, bg: string }) {
-  return (
-    <div className="gov-card p-5 flex items-center gap-4">
-      <div className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center`}>{icon}</div>
-      <div>
-        <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">{label}</p>
-        <p className="text-xl font-extrabold text-[#152C4D] mt-0.5">{value}</p>
-      </div>
+// --- SUB COMPONENTS ---
+
+const ProfileField = ({ label, value, icon }: any) => (
+  <div className="space-y-1.5 group">
+    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+      {icon} {label}
+    </label>
+    <div className="px-4 py-3 bg-slate-50 border-2 border-slate-50 group-hover:border-blue-100 group-hover:bg-white transition-all rounded-2xl font-bold text-slate-700">
+      {value || <span className="text-slate-300 font-normal italic">Non renseigné</span>}
     </div>
-  )
-}
+  </div>
+);
 
-export default EmployeeProfile
+const StatCard = ({ icon, label, value, bg }: any) => (
+  <div className="bg-white p-6 rounded-3xl border-2 border-slate-50 shadow-sm flex items-center gap-5 hover:scale-[1.03] transition-all">
+    <div className={`p-4 rounded-2xl ${bg}`}>{icon}</div>
+    <div className="text-right">
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{label}</p>
+      <p className="text-xl font-black text-[#152C4D]">{value}</p>
+    </div>
+  </div>
+);
+
+const QuickAction = ({ label, color }: any) => (
+  <button className={`w-full text-right px-4 py-3 bg-${color}-50 text-${color}-700 rounded-2xl font-bold text-sm border-2 border-transparent hover:border-${color}-200 transition-all flex items-center justify-between group`}>
+    {label}
+    <ChevronRight size={18} className={`group-hover:translate-x-1 transition-transform`} />
+  </button>
+);
+
+const Clock = ({ size, className }: { size: number, className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+);
+
+export default EmployeeProfile;

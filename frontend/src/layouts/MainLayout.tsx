@@ -1,268 +1,323 @@
-import React, { useState, useRef, useEffect } from 'react'
-import {
-  Home, Users, UserPlus, TrendingUp, FolderOpen,
-  GraduationCap, HeartPulse, PawPrint, BarChart3, Settings,
-  Bell, Search, LogOut, UserCircle, Edit3,
-  Cog, X, CheckCheck, AlertCircle, Info
-} from 'lucide-react'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../lib/auth'
-
-// ─── Mock notification data ────────────────────────────────────────────────
-const MOCK_NOTIFICATIONS = [
-  { id: 1, type: 'success', title: 'Candidature acceptée', desc: 'Ahmed Bennani a été accepté au Concours N°12', time: 'Il y a 5 min', read: false },
-  { id: 2, type: 'info', title: 'Nouveau document uploadé', desc: 'Fatima Zahra a soumis son dossier médical', time: 'Il y a 1h', read: false },
-  { id: 3, type: 'warning', title: 'Concours expire bientôt', desc: 'Le concours Assistant Social expire dans 2 jours', time: 'Il y a 3h', read: false },
-  { id: 4, type: 'info', title: 'Rapport mensuel généré', desc: 'Le rapport RH d\'Avril est disponible', time: 'Hier', read: true },
-]
+import { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { 
+  Home, Users, UserPlus, Shield, Network, 
+  List, Briefcase, TrendingUp, Star, History, 
+  Route, DollarSign, Gift, ScrollText, Calendar, 
+  CalendarDays, CalendarCheck, FileText, FilePlus, 
+  Bell, BarChart3, PieChart, Menu, ChevronDown,
+  PawPrint, Activity, Syringe, AlertTriangle, User as UserIcon, LogOut,
+  ClipboardList
+} from 'lucide-react';
+import { useAuthStore } from '../lib/auth';
 
 const MainLayout = () => {
-  const [sidebarHovered, setSidebarHovered] = useState(false)
-  const [notifOpen, setNotifOpen] = useState(false)
-  const [profileOpen, setProfileOpen] = useState(false)
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
-  const notifRef = useRef<HTMLDivElement>(null)
-  const profileRef = useRef<HTMLDivElement>(null)
-  const { user, logout } = useAuthStore()
-  const navigate = useNavigate()
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
 
-  const unreadCount = notifications.filter(n => !n.read).length
-
-  // Close dropdowns on outside click
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false)
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
-  const markAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+    document.documentElement.dir = 'rtl';
+    document.documentElement.lang = 'ar';
+    return () => {
+      document.documentElement.dir = 'ltr'; 
+      document.documentElement.lang = 'fr';
+    };
+  }, []);
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+    logout();
+    navigate('/login');
+  };
 
-  const notifIcon: any = {
-    success: <CheckCheck size={14} className="text-emerald-500" />,
-    info: <Info size={14} className="text-blue-500" />,
-    warning: <AlertCircle size={14} className="text-amber-500" />,
-  }
+  const rhMenu = [
+    {
+      title: '',
+      items: [
+        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
+      ]
+    },
+    {
+      title: 'إدارة الموظفين',
+      items: [
+        { title: 'الموظفون', icon: <Users size={20} />, path: '/rh/employees' },
+        { title: 'إضافة موظف جديد', icon: <UserPlus size={20} />, path: '/rh/employees/add' },
+        { title: 'الأدوار والصلاحيات', icon: <Shield size={20} />, path: '/rh/roles' },
+        { title: 'الهيكل التنظيمي', icon: <Network size={20} />, path: '/rh/organigramme' },
+      ]
+    },
+    {
+      title: 'الحالة الإدارية',
+      items: [
+        { title: 'الدرجات والسلم', icon: <List size={20} />, path: '/rh/grades' },
+        { title: 'الوضعيات الإدارية', icon: <Briefcase size={20} />, path: '/rh/admin-status' },
+        { title: 'الترقيات والتنقلات', icon: <TrendingUp size={20} />, path: '/rh/promotions' },
+      ]
+    },
+    {
+      title: 'إدارة الأداء',
+      items: [
+        { title: 'تقييم الأداء', icon: <Star size={20} />, path: '/rh/performance' },
+        { title: 'تاريخ التقييمات', icon: <History size={20} />, path: '/rh/eval-history' },
+        { title: 'المسار المهني', icon: <Route size={20} />, path: '/rh/career-path' },
+      ]
+    },
+    {
+      title: 'التعويضات والأجور',
+      items: [
+        { title: 'الأجور', icon: <DollarSign size={20} />, path: '/rh/salaries' },
+        { title: 'التعويضات', icon: <Gift size={20} />, path: '/rh/bonuses' },
+        { title: 'سجل الأداءات', icon: <ScrollText size={20} />, path: '/rh/payment-history' },
+      ]
+    },
+    {
+      title: 'إدارة العطل',
+      items: [
+        { title: 'طلبات العطل', icon: <CalendarDays size={20} />, path: '/rh/leave-requests' },
+        { title: 'رصيد العطل', icon: <CalendarCheck size={20} />, path: '/rh/leave-balance' },
+        { title: 'تقويم العطل', icon: <Calendar size={20} />, path: '/rh/leave-calendar' },
+      ]
+    },
+    {
+      title: 'الوثائق والإشعارات',
+      items: [
+        { title: 'الوثائق الإدارية', icon: <FileText size={20} />, path: '/rh/documents' },
+        { title: 'إنشاء وثيقة', icon: <FilePlus size={20} />, path: '/rh/documents/create' },
+        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/rh/notifications' },
+      ]
+    },
+    {
+      title: 'التقارير والإحصائيات',
+      items: [
+        { title: 'تقارير الموارد البشرية', icon: <BarChart3 size={20} />, path: '/rh/reports' },
+        { title: 'الإحصائيات', icon: <PieChart size={20} />, path: '/rh/statistics' },
+      ]
+    }
+  ];
+
+  const vetMenu = [
+    {
+      title: '',
+      items: [
+        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
+      ]
+    },
+    {
+      title: 'الصحة الحيوانية',
+      items: [
+        { title: 'الحيوانات', icon: <PawPrint size={20} />, path: '/veterinaire/animals' },
+        { title: 'الحالات الصحية', icon: <Activity size={20} />, path: '/veterinaire/health' },
+        { title: 'التلقيحات', icon: <Syringe size={20} />, path: '/veterinaire/vaccinations' },
+        { title: 'الشهادات البيطرية', icon: <FilePlus size={20} />, path: '/veterinaire/certificates' },
+        { title: 'الأوبئة والأمراض', icon: <AlertTriangle size={20} />, path: '/veterinaire/epidemics' },
+        { title: 'التقارير البيطرية', icon: <BarChart3 size={20} />, path: '/veterinaire/reports' },
+      ]
+    },
+    {
+      title: 'الفضاء الشخصي',
+      items: [
+        { title: 'ملفي الشخصي', icon: <UserIcon size={20} />, path: '/veterinaire/profile' },
+        { title: 'حالتي الإدارية', icon: <Briefcase size={20} />, path: '/veterinaire/admin-status' },
+        { title: 'الأجر والتعويضات', icon: <DollarSign size={20} />, path: '/veterinaire/salary' },
+        { title: 'التقييمات', icon: <Star size={20} />, path: '/veterinaire/evaluations' },
+        { title: 'الترقيات', icon: <TrendingUp size={20} />, path: '/veterinaire/promotions' },
+        { title: 'العطل والغيابات', icon: <CalendarDays size={20} />, path: '/veterinaire/leaves' },
+        { title: 'الوثائق', icon: <FileText size={20} />, path: '/veterinaire/documents' },
+        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/veterinaire/notifications' },
+      ]
+    }
+  ];
+
+  const medicalMenu = [
+    {
+      title: '',
+      items: [
+        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
+      ]
+    },
+    {
+      title: 'الملف الطبي',
+      items: [
+        { title: 'المرضى والملفات الطبية', icon: <Users size={20} />, path: '/medical/patients' },
+        { title: 'المواعيد', icon: <Calendar size={20} />, path: '/medical/appointments' },
+        { title: 'التشخيصات والملاحظات', icon: <ClipboardList size={20} />, path: '/medical/diagnosis' },
+        { title: 'الشواهد الطبية', icon: <FileText size={20} />, path: '/medical/certificates' },
+        { title: 'متابعة الحالات', icon: <Activity size={20} />, path: '/medical/follow-up' },
+      ]
+    },
+    {
+      title: 'الفضاء الشخصي',
+      items: [
+        { title: 'ملفي الشخصي', icon: <UserIcon size={20} />, path: '/medical/profile' },
+        { title: 'الحالة الإدارية', icon: <Briefcase size={20} />, path: '/medical/admin-status' },
+        { title: 'الأجر والتعويضات', icon: <DollarSign size={20} />, path: '/medical/salary' },
+        { title: 'التقييمات', icon: <Star size={20} />, path: '/medical/evaluations' },
+        { title: 'الترقيات', icon: <TrendingUp size={20} />, path: '/medical/promotions' },
+        { title: 'العطل والغيابات', icon: <CalendarDays size={20} />, path: '/medical/leaves' },
+        { title: 'الوثائق', icon: <FileText size={20} />, path: '/medical/documents' },
+        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/medical/notifications' },
+      ]
+    }
+  ];
+
+  const nurseMenu = [
+    {
+      title: '',
+      items: [
+        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
+      ]
+    },
+    {
+      title: 'الملف الطبي',
+      items: [
+        { title: 'المرضى', icon: <Users size={20} />, path: '/nurse/patients' },
+        { title: 'متابعة الحالات', icon: <Activity size={20} />, path: '/nurse/follow-up' },
+        { title: 'العلاجات المقدمة', icon: <Syringe size={20} />, path: '/nurse/treatments' },
+        { title: 'المؤشرات الصحية', icon: <Activity size={20} />, path: '/nurse/vitals' },
+        { title: 'التقارير الصحية', icon: <FileText size={20} />, path: '/nurse/reports' },
+        { title: 'المواعيد', icon: <Calendar size={20} />, path: '/nurse/appointments' },
+      ]
+    },
+    {
+      title: 'الفضاء الشخصي',
+      items: [
+        { title: 'ملفي الشخصي', icon: <UserIcon size={20} />, path: '/nurse/profile' },
+        { title: 'الحالة الإدارية', icon: <Briefcase size={20} />, path: '/nurse/admin-status' },
+        { title: 'الأجر والتعويضات', icon: <DollarSign size={20} />, path: '/nurse/salary' },
+        { title: 'التقييمات', icon: <Star size={20} />, path: '/nurse/evaluations' },
+        { title: 'الترقيات', icon: <TrendingUp size={20} />, path: '/nurse/promotions' },
+        { title: 'العطل', icon: <CalendarDays size={20} />, path: '/nurse/leaves' },
+        { title: 'الوثائق', icon: <FileText size={20} />, path: '/nurse/documents' },
+        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/nurse/notifications' },
+      ]
+    }
+  ];
+
+  const menuSections = 
+    user?.role === 'nurse' ? nurseMenu :
+    user?.role === 'veterinarian' ? vetMenu : 
+    user?.role === 'doctor' ? medicalMenu : 
+    rhMenu;
 
   return (
-    <div className="flex h-screen bg-govBackground text-primary-900 font-body overflow-hidden">
+    <div className="flex h-screen bg-slate-50 text-gray-800 font-sans overflow-hidden" dir="rtl">
       
-      {/* ── Smart Hover Sidebar ─────────────────────────────── */}
-      <aside
-        onMouseEnter={() => setSidebarHovered(true)}
-        onMouseLeave={() => setSidebarHovered(false)}
-        className={`bg-[#152C4D] text-white flex flex-col hidden md:flex rounded-br-3xl shadow-[4px_0_24px_rgba(0,0,0,0.15)] z-30 transition-all duration-300 ease-in-out flex-shrink-0 ${
-          sidebarHovered ? 'w-68' : 'w-[72px]'
-        }`}
-        style={{ width: sidebarHovered ? '272px' : '72px' }}
-      >
+      {/* ── Sidebar ─────────────────────────────── */}
+      <aside className={`bg-white border-l border-gray-200 flex flex-col transition-all duration-300 z-30 flex-shrink-0 shadow-sm ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
+        
         {/* Brand */}
-        <div className="p-4 flex items-center gap-3 overflow-hidden h-[80px] flex-shrink-0">
-          <div className="w-10 h-10 min-w-[40px] bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg border border-yellow-400/50">
-            <span className="text-white font-bold text-lg font-serif">A</span>
+        <div className="bg-[#0d5e3f] h-20 flex items-center px-4 gap-3 text-white flex-shrink-0">
+          <div className="w-10 h-12 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded flex items-center justify-center font-bold text-sm shadow-md">
+            شعار
           </div>
-          <div className={`transition-all duration-300 overflow-hidden ${sidebarHovered ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-            <h1 className="text-base font-bold tracking-tight text-white leading-tight whitespace-nowrap">HRIS Larache</h1>
-            <p className="text-[9px] text-blue-200 uppercase tracking-[0.15em] font-medium whitespace-nowrap">Portail Commune</p>
+          <div>
+            <h1 className="font-extrabold text-sm leading-tight">الجماعة الترابية</h1>
+            <h2 className="font-bold text-sm leading-tight text-green-100">مدينة المستقبل</h2>
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 py-2 px-2 space-y-0.5 overflow-y-auto overflow-x-hidden custom-scrollbar">
-          <NavItem to="/dashboard"   icon={<Home size={20} />}          label="Tableau de bord"       collapsed={!sidebarHovered} />
-          <NavItem to="/personnel"   icon={<Users size={20} />}         label="Personnel"             collapsed={!sidebarHovered} />
-          <NavItem to="/recrutement" icon={<UserPlus size={20} />}      label="Recrutement"           collapsed={!sidebarHovered} />
-          <NavItem to="/carriere"    icon={<TrendingUp size={20} />}    label="Carrière & Évaluation" collapsed={!sidebarHovered} />
-          <NavItem to="/documents"   icon={<FolderOpen size={20} />}    label="Documents"             collapsed={!sidebarHovered} />
-          <NavItem to="/formation"   icon={<GraduationCap size={20} />} label="Formation"             collapsed={!sidebarHovered} />
-          <NavItem to="/sante"       icon={<HeartPulse size={20} />}    label="Santé & Médecine"      collapsed={!sidebarHovered} />
-          <NavItem to="/veterinaire" icon={<PawPrint size={20} />}      label="Vétérinaire"           collapsed={!sidebarHovered} />
-          <NavItem to="/rapports"    icon={<BarChart3 size={20} />}     label="Rapports & Stats"      collapsed={!sidebarHovered} />
-
-          <div className="border-t border-white/10 my-2 mx-1" />
-
-          <NavItem to="/parametres"  icon={<Settings size={20} />}     label="Paramètres"            collapsed={!sidebarHovered} />
-        </nav>
-
-        {/* Sidebar Footer */}
-        <div className={`p-3 border-t border-white/10 transition-all duration-300 overflow-hidden ${sidebarHovered ? 'opacity-100' : 'opacity-0 h-0 p-0'}`}>
-          <div className="text-center">
-            <p className="text-[10px] text-blue-200/60 uppercase tracking-widest font-serif">Larache · Lixus</p>
-            <p className="text-[8px] text-white/30 mt-0.5">ملتقى الحضارات</p>
+        {/* Menu */}
+        <div className="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">
+          {menuSections.map((section, idx) => (
+            <div key={idx} className="mb-4">
+              {section.title && (
+                <h3 className="text-emerald-700 text-[11px] font-extrabold mb-2 px-4">{section.title}</h3>
+              )}
+              <ul className="space-y-1">
+                {section.items.map((item, i) => {
+                  const isActive = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
+                  return (
+                    <li key={i}>
+                      <Link 
+                        to={item.path}
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                          isActive 
+                            ? 'bg-emerald-50 text-emerald-700 border-r-4 border-emerald-600' 
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-700 border-r-4 border-transparent'
+                        }`}
+                      >
+                        <span className={`${isActive ? 'text-emerald-600' : 'text-gray-400'}`}>{item.icon}</span>
+                        {item.title}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+          
+          <div className="mt-8 pt-4 border-t border-gray-100">
+             <button 
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+             >
+                <LogOut size={20} />
+                تسجيل الخروج
+             </button>
           </div>
         </div>
       </aside>
 
-      {/* ── Main Content ───────────────────────────────────── */}
-      <div className="flex-1 flex flex-col overflow-hidden relative bg-[#F4F7FB]">
-
-        {/* Top Header */}
-        <header className="h-20 px-8 flex items-center justify-between z-20 relative bg-[#F4F7FB] border-b border-slate-200/60">
-          {/* Search */}
-          <div className="relative hidden md:block w-[400px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
-            <input
-              type="text"
-              placeholder="Rechercher (employé, dossier, service...)"
-              className="w-full bg-white pl-11 pr-5 py-3 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-600/20 text-sm text-slate-600 border border-slate-200 transition-shadow"
-            />
+      {/* ── Main Area ───────────────────────────── */}
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        
+        {/* Topbar */}
+        <header className="h-20 bg-white border-b border-gray-200 px-8 flex items-center justify-between shadow-sm z-20 flex-shrink-0">
+          <div className="flex items-center gap-4">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-500 hover:text-emerald-700">
+              <Menu size={24} />
+            </button>
+            <div>
+              <h2 className="text-lg font-extrabold text-gray-800 flex items-center gap-2">
+                👋 مرحباً {user?.name || 'سعاد الإدريسي'}
+              </h2>
+              <p className="text-sm text-gray-500 font-medium">
+                {user?.role === 'rh' ? 'موارد بشرية' : user?.role === 'doctor' ? 'طبيب عام' : user?.role === 'nurse' ? 'ممرضة' : 'طبيب بيطري'} - جماعة مدينة المستقبل
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4 ml-auto">
-            
-            {/* ── Notification Bell ─────────────── */}
-            <div className="relative" ref={notifRef}>
-              <button
-                onClick={() => { setNotifOpen(o => !o); setProfileOpen(false) }}
-                className="relative w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-500 hover:border-blue-300 hover:text-blue-600 transition-all"
-              >
-                <Bell size={20} />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 border-2 border-[#F4F7FB] rounded-full flex items-center justify-center text-[10px] text-white font-bold">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Notification Dropdown */}
-              {notifOpen && (
-                <div className="absolute right-0 top-12 w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-slide-up">
-                  <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-                    <h3 className="font-bold text-[#152C4D] text-base">Notifications</h3>
-                    <div className="flex items-center gap-2">
-                      {unreadCount > 0 && (
-                        <button onClick={markAllRead} className="text-xs text-blue-600 hover:underline font-medium">
-                          Tout marquer lu
-                        </button>
-                      )}
-                      <button onClick={() => setNotifOpen(false)} className="text-slate-400 hover:text-slate-600">
-                        <X size={16} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-50">
-                    {notifications.map(n => (
-                      <div key={n.id} className={`flex gap-3 px-5 py-4 hover:bg-slate-50 cursor-pointer transition-colors ${!n.read ? 'bg-blue-50/40' : ''}`}>
-                        <div className="mt-1 w-6 h-6 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center flex-shrink-0">
-                          {notifIcon[n.type]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-bold text-[#152C4D] ${!n.read ? '' : 'font-medium'}`}>{n.title}</p>
-                          <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{n.desc}</p>
-                          <p className="text-[10px] text-slate-400 mt-1 font-medium">{n.time}</p>
-                        </div>
-                        {!n.read && <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="px-5 py-3 border-t border-slate-100 text-center">
-                    <Link to="/activites" onClick={() => setNotifOpen(false)} className="text-sm font-semibold text-blue-600 hover:underline">
-                      Voir toutes les notifications
-                    </Link>
-                  </div>
-                </div>
-              )}
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-2 text-gray-500 text-sm font-bold bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+              <Calendar size={16} />
+              الأحد 19 ماي 2024
+              <ChevronDown size={14} className="ml-2" />
             </div>
 
-            {/* ── Profile Dropdown ──────────────── */}
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => { setProfileOpen(o => !o); setNotifOpen(false) }}
-                className="flex items-center gap-3 bg-white rounded-full pl-3 pr-1 py-1 shadow-sm border border-slate-200 hover:border-blue-300 transition-all"
-              >
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold text-[#152C4D] leading-tight">{user?.name || 'Direction RH'}</p>
-                  <p className="text-[11px] text-slate-500 capitalize">{user?.role?.replace('_', ' ') || 'Admin'}</p>
-                </div>
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1E3E6E] to-[#3466A4] flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                  {user?.name?.charAt(0).toUpperCase() || 'A'}
-                </div>
-              </button>
+            <button className="relative text-gray-500 hover:text-emerald-700 transition-colors">
+              <Bell size={22} />
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">5</span>
+            </button>
 
-              {/* Profile Dropdown Menu */}
-              {profileOpen && (
-                <div className="absolute right-0 top-12 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-slide-up">
-                  <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                    <p className="text-sm font-bold text-[#152C4D]">{user?.name || 'Administrateur RH'}</p>
-                    <p className="text-xs text-slate-500 truncate">{user?.email || 'admin@larache.ma'}</p>
-                  </div>
-                  <div className="py-1">
-                    <DropdownItem icon={<UserCircle size={15} />} label="Voir le profil" onClick={() => { navigate('/profil'); setProfileOpen(false) }} />
-                    <DropdownItem icon={<Edit3 size={15} />} label="Modifier le profil" onClick={() => { navigate('/profil/edit'); setProfileOpen(false) }} />
-                    <DropdownItem icon={<Cog size={15} />} label="Paramètres" onClick={() => { navigate('/parametres'); setProfileOpen(false) }} />
-                  </div>
-                  <div className="border-t border-slate-100 py-1">
-                    <DropdownItem icon={<LogOut size={15} />} label="Déconnexion" onClick={handleLogout} danger />
-                  </div>
-                </div>
-              )}
+            <div className="flex items-center gap-3 cursor-pointer group">
+              <div className="text-left hidden md:block">
+                <h3 className="text-sm font-bold text-gray-800 group-hover:text-emerald-700 transition-colors">{user?.name || 'سعاد الإدريسي'}</h3>
+                <p className="text-xs text-gray-500 font-medium">
+                  {user?.role === 'rh' ? 'مسؤولة الموارد البشرية' : user?.role === 'doctor' ? 'طبيب عام - مصلحة الصحة' : user?.role === 'nurse' ? 'ممرضة - مصلحة الصحة' : 'طبيب بيطري ممارس'}
+                </p>
+              </div>
+              <img 
+                src={
+                  user?.role === 'doctor' ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" :
+                  user?.role === 'nurse' ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80" :
+                  user?.role === 'veterinarian' ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" : 
+                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
+                } 
+                alt="Profile" 
+                className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-emerald-500 transition-colors" 
+              />
             </div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto px-8 py-8 custom-scrollbar relative z-0">
+        {/* Content */}
+        <main className="flex-1 overflow-y-auto bg-slate-50 p-8 custom-scrollbar">
           <Outlet />
         </main>
-
-        {/* Footer */}
-        <footer className="bg-white border-t border-slate-200/80 px-8 py-3 flex items-center justify-between flex-shrink-0">
-          <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} <span className="font-semibold text-[#152C4D]">Commune de Larache</span> — Système HRIS • Direction des Ressources Humaines
-          </p>
-          <div className="flex items-center gap-4">
-            <a href="#" className="text-xs text-slate-400 hover:text-[#3466A4] transition-colors">Politique de confidentialité</a>
-            <a href="#" className="text-xs text-slate-400 hover:text-[#3466A4] transition-colors">Aide & Support</a>
-            <span className="text-xs text-slate-300">v2.0.0</span>
-          </div>
-        </footer>
       </div>
     </div>
-  )
-}
+  );
+};
 
-// ─── NavItem ──────────────────────────────────────────────────────────────────
-function NavItem({ icon, label, to, collapsed }: { icon: React.ReactNode, label: string, to: string, collapsed: boolean }) {
-  const location = useLocation()
-  const isDashboard = to === '/dashboard' && (location.pathname === '/' || location.pathname === '/dashboard')
-  const isActive = isDashboard || (to !== '/dashboard' && location.pathname.startsWith(to))
-
-  return (
-    <Link
-      to={to}
-      title={collapsed ? label : undefined}
-      className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 font-medium group ${
-        isActive ? 'bg-[#1E3E6E] text-white' : 'text-blue-100 hover:text-white hover:bg-white/10'
-      }`}
-    >
-      <div className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-blue-200'}`}>{icon}</div>
-      <span className={`text-[13.5px] leading-none tracking-tight whitespace-nowrap transition-all duration-300 overflow-hidden ${collapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
-        {label}
-      </span>
-    </Link>
-  )
-}
-
-// ─── DropdownItem ─────────────────────────────────────────────────────────────
-function DropdownItem({ icon, label, onClick, danger }: { icon: React.ReactNode, label: string, onClick: () => void, danger?: boolean }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors text-left ${
-        danger ? 'text-red-500 hover:bg-red-50' : 'text-slate-700 hover:bg-slate-50 hover:text-[#152C4D]'
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  )
-}
-
-export default MainLayout
+export default MainLayout;

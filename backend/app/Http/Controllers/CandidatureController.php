@@ -69,4 +69,28 @@ class CandidatureController extends Controller
             'candidature' => $candidature
         ]);
     }
+
+    /**
+     * Get applications for the authenticated candidate.
+     */
+    public function myCandidatures()
+    {
+        $user = auth('api')->user();
+        if ($user->role !== 'candidat') {
+            return response()->json(['error' => 'Only candidates can view their applications.'], 403);
+        }
+
+        $candidat = \App\Models\Candidat::where('user_id', $user->id)->first();
+        
+        if (!$candidat) {
+             return response()->json(['error' => 'Candidate profile not found.'], 404);
+        }
+
+        $candidatures = Candidature::with('concours')
+            ->where('candidat_id', $candidat->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($candidatures);
+    }
 }

@@ -1,145 +1,142 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { api } from '../../lib/api';
-import { User, Mail, Lock, Building, GraduationCap, Loader2, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuthStore } from '../../lib/auth';
+import { Loader2, User, Mail, Lock, Shield, ArrowRight } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    name: '', email: '', password: '', role: 'candidat',
-    cin: '', first_name: '', last_name: '', department: ''
-  });
-  const [error, setError] = useState('');
+  const [role, setRole] = useState<'candidate' | 'fonctionnaire'>('candidate');
+  const [formData, setFormData] = useState({ name: '', cin: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { setAuth } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); setError('');
-
+    setLoading(true);
+    setError('');
     try {
-      await api.post('/auth/register', formData);
-      navigate('/login'); // Force user to login post registration to generate token properly
+      const res = await axios.post('http://localhost:8000/api/auth/register', { ...formData, role });
+      const { user, access_token } = res.data;
+      if (access_token) setAuth(user, access_token);
+      toast.success('Compte créé avec succès !');
+      navigate(role === 'candidate' ? '/portal' : '/dashboard');
     } catch (err: any) {
       setError(err.response?.data || 'Inscription échouée.');
+      toast.error('Erreur lors de l\'inscription');
     } finally {
       setLoading(false);
     }
   };
 
-  const isCandidat = formData.role === 'candidat';
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-govBackground p-4 py-12">
-      <div className="gov-card w-full max-w-xl p-8">
+    <div className="min-h-[90vh] flex items-center justify-center p-4">
+      <div className="w-full max-w-xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
         
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold font-heading text-[#152C4D]">Créer un compte</h1>
-          <p className="text-slate-500 text-sm mt-1">Rejoignez le portail e-RH Larache</p>
+        <div className="flex-1 p-8 md:p-12">
+          <div className="mb-10 text-center">
+            <h1 className="text-3xl font-black font-heading text-[var(--primary-main)] dark:text-white tracking-tight">Créer un compte</h1>
+            <p className="text-slate-400 mt-2 font-medium">Rejoignez la plateforme numérique de la commune.</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* Role Selection */}
+            <div className="bg-slate-50 p-2 rounded-2xl flex gap-2 border border-slate-100">
+              <button 
+                type="button"
+                onClick={() => setRole('candidate')}
+                className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${role === 'candidate' ? 'bg-[var(--primary-main)] text-white shadow-lg' : 'text-slate-400 hover:bg-white'}`}
+              >
+                Candidat
+              </button>
+              <button 
+                type="button"
+                onClick={() => setRole('fonctionnaire')}
+                className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${role === 'fonctionnaire' ? 'bg-[#1E3E6E] text-white shadow-lg' : 'text-slate-400 hover:bg-white'}`}
+              >
+                Agent
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">CIN / Matricule</label>
+                <div className="relative">
+                  <Shield className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                  <input 
+                    required 
+                    className="form-input w-full pr-10" 
+                    placeholder="Ex: AB12345"
+                    value={formData.cin}
+                    onChange={e => setFormData({...formData, cin: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Nom Complet</label>
+                <div className="relative">
+                  <User className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                  <input 
+                    required 
+                    className="form-input w-full pr-10" 
+                    placeholder="Prénom et Nom"
+                    value={formData.name}
+                    onChange={e => setFormData({...formData, name: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Email professionnel / personnel</label>
+              <div className="relative">
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                <input 
+                  type="email" 
+                  required 
+                  className="form-input w-full pr-10" 
+                  placeholder="email@example.com"
+                  value={formData.email}
+                  onChange={e => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Mot de passe</label>
+              <div className="relative">
+                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                <input 
+                  type="password" 
+                  required 
+                  className="form-input w-full pr-10" 
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={e => setFormData({...formData, password: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {error && <p className="text-rose-500 text-xs font-bold text-center bg-rose-50 py-3 rounded-xl border border-rose-100">{error}</p>}
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full btn-primary py-4 rounded-2xl flex items-center justify-center gap-3 shadow-xl shadow-emerald-900/10 active:scale-[0.98] transition-all text-sm font-black uppercase tracking-widest"
+            >
+              {loading ? <Loader2 className="animate-spin" size={20} /> : (
+                <>Créer mon compte <ArrowRight size={18} /></>
+              )}
+            </button>
+          </form>
+
+          <p className="mt-8 text-center text-sm font-bold text-slate-400">
+            Déjà inscrit ? <Link to="/login" className="text-blue-600 hover:underline">Connectez-vous ici</Link>
+          </p>
         </div>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-xl border border-red-100 flex gap-3">
-            <AlertTriangle size={18} className="shrink-0" />
-            <p className="break-words">{JSON.stringify(error)}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleRegister} className="space-y-6">
-          
-          {/* Role Selection Blocks */}
-          <div>
-             <label className="block text-sm font-bold text-[#152C4D] mb-3">Sélectionnez votre profil :</label>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                {/* Option Candidat */}
-                <div 
-                   onClick={() => setFormData({...formData, role: 'candidat'})}
-                   className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-4 ${isCandidat ? 'border-[#3B82F6] bg-blue-50/50' : 'border-slate-100 hover:border-blue-200'}`}
-                >
-                   <div className={`p-2 rounded-lg ${isCandidat ? 'bg-[#3B82F6] text-white' : 'bg-slate-100 text-slate-500'}`}><GraduationCap size={20} /></div>
-                   <div>
-                     <p className={`font-bold text-sm ${isCandidat ? 'text-[#152C4D]' : 'text-slate-600'}`}>Candidat</p>
-                     <p className="text-[11px] text-slate-400 leading-tight mt-0.5">Pour postuler aux concours</p>
-                   </div>
-                </div>
-
-                {/* Option RH Admin */}
-                <div 
-                   onClick={() => setFormData({...formData, role: 'rh_admin'})}
-                   className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-4 ${!isCandidat ? 'border-[#152C4D] bg-primary-100/10' : 'border-slate-100 hover:border-primary-200'}`}
-                >
-                   <div className={`p-2 rounded-lg ${!isCandidat ? 'bg-[#152C4D] text-white' : 'bg-slate-100 text-slate-500'}`}><Building size={20} /></div>
-                   <div>
-                     <p className={`font-bold text-sm ${!isCandidat ? 'text-[#152C4D]' : 'text-slate-600'}`}>Admin RH</p>
-                     <p className="text-[11px] text-slate-400 leading-tight mt-0.5">Gestion des ressources</p>
-                   </div>
-                </div>
-
-             </div>
-          </div>
-
-          <div className="h-px w-full bg-slate-100"></div>
-
-          {/* Account Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Nom d'utilisateur</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 outline-none text-sm" placeholder="john_doe" />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Adresse Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 outline-none text-sm" placeholder="email@exemple.com" />
-                </div>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Mot de passe</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="password" required value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-600/20 outline-none text-sm" placeholder="••••••••" />
-                </div>
-              </div>
-          </div>
-
-          {/* Conditional Fields based on Role */}
-          {isCandidat && (
-             <div className="p-5 bg-[#F4F7FB]/50 rounded-2xl border border-slate-100 space-y-4">
-                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#3B82F6]">Dossier Candidat</h3>
-                 <div className="grid grid-cols-2 gap-4">
-                     <div className="col-span-2">
-                         <label className="block text-xs font-medium text-slate-600 mb-1">CIN (Numéro de carte d'identité)</label>
-                         <input type="text" required={isCandidat} value={formData.cin} onChange={e => setFormData({...formData, cin: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white" placeholder="ex: L123456" />
-                     </div>
-                     <div>
-                         <label className="block text-xs font-medium text-slate-600 mb-1">Prénom</label>
-                         <input type="text" required={isCandidat} value={formData.first_name} onChange={e => setFormData({...formData, first_name: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white" placeholder="Youssef" />
-                     </div>
-                     <div>
-                         <label className="block text-xs font-medium text-slate-600 mb-1">Nom</label>
-                         <input type="text" required={isCandidat} value={formData.last_name} onChange={e => setFormData({...formData, last_name: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white" placeholder="Tazi" />
-                     </div>
-                 </div>
-             </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#152C4D] hover:bg-[#1E3E6E] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-[#152C4D]/20 hover:shadow-xl transition-all flex items-center justify-center mt-2 group"
-          >
-            {loading ? <Loader2 className="animate-spin" size={20} /> : "Créer le compte"}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-slate-500 mt-6 font-medium">
-          Déjà un compte ? <Link to="/login" className="text-blue-600 hover:underline">Connectez-vous</Link>
-        </p>
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
-import React from 'react'
+﻿import React, { useState, useEffect } from 'react';
+
+
 import { CheckCircle2, Circle, Clock, AlertCircle } from 'lucide-react'
 
 interface WorkflowStep {
@@ -61,3 +63,10 @@ const WorkflowVisualizer: React.FC<WorkflowVisualizerProps> = ({ steps }) => {
 }
 
 export default WorkflowVisualizer
+
+
+
+
+
+
+

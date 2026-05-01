@@ -1,30 +1,40 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  safelist: [
+    'bg-blue-50', 'text-blue-600',
+    'bg-emerald-50', 'text-emerald-600',
+    'bg-purple-50', 'text-purple-600',
+    'bg-orange-50', 'text-orange-600',
   ],
   theme: {
     extend: {
       colors: {
         primary: {
-          900: '#152C4D', // Deep Navy (Sidebar)
-          800: '#1E3E6E', // Active Sidebar Menu
-          700: '#2A5285', // Hover
-          600: '#3466A4', // Accents
+          900: '#152C4D',
+          800: '#1E3E6E',
+          700: '#2A5285',
+          600: '#3466A4',
+          light: 'var(--primary-light)',
+          main: 'var(--primary-main)',
+          dark: 'var(--primary-dark)',
         },
         healthcare: {
-          600: '#10B981', // Emerald (Médecins / Green Tags)
+          600: '#10B981',
           500: '#34D399',
           50: '#ECFDF5',
         },
         accent: {
-          blue: '#3B82F6',   // Personnel icon
-          purple: '#8B5CF6', // Infirmiers icon
-          teal: '#0D9488',   // Vétérinaires icon
-          orange: '#F97316', // Recrutement tag
+          blue: '#3B82F6',
+          purple: '#8B5CF6',
+          teal: '#0D9488',
+          orange: '#F97316',
         },
-        govBackground: '#F4F7FB', // Light Gray/Blue background layout
+        govBackground: 'var(--color-govBackground)',
       },
       fontFamily: {
         heading: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],

@@ -11,6 +11,9 @@ class Fonctionnaire extends Model
         'candidat_id',
         'matricule',
         'grade',
+        'specialty',
+        'echelon',
+        'rank_degree',
         'recruitment_date',
         'status'
     ];

@@ -39,8 +39,17 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/concours/{concours}', [ConcoursController::class, 'show']);
     Route::get('/pdf/attestation/{fonctionnaire}', [PdfController::class, 'generateAttestation']);
     
+    // User Settings
+    Route::get('/settings', [\App\Http\Controllers\SettingsController::class, 'getSettings']);
+    Route::post('/settings', [\App\Http\Controllers\SettingsController::class, 'updateSettings']);
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead']);
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
+    
     // Candidate Actions
     Route::middleware('role:candidat')->group(function () {
+        Route::get('/candidatures/my', [CandidatureController::class, 'myCandidatures']);
         Route::post('/concours/{concours}/apply', [CandidatureController::class, 'apply']);
         Route::post('/documents/upload', [DocumentController::class, 'upload']);
     });
@@ -49,5 +58,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::middleware('role:rh_admin')->group(function () {
         Route::post('/concours', [ConcoursController::class, 'store']);
         Route::patch('/candidatures/{candidature}/status', [CandidatureController::class, 'updateStatus']);
+        Route::get('/fonctionnaires', [\App\Http\Controllers\FonctionnaireController::class, 'index']);
+        Route::get('/fonctionnaires/{id}', [\App\Http\Controllers\FonctionnaireController::class, 'show']);
     });
 });
