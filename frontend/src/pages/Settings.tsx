@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { 
-  User, Shield, Bell, Database, Globe, 
-  Palette, Layout, Minimize2, Check, 
+import {
+  User, Shield, Bell, Database, Globe,
+  Palette, Layout, Minimize2, Check,
   RefreshCw, Save, Smartphone, Lock
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 const TABS = [
-  { key: 'profil',   label: 'Mon Profil', icon: <User size={18} /> },
+  { key: 'profil', label: 'Mon Profil', icon: <User size={18} /> },
   { key: 'apparence', label: 'Apparence', icon: <Palette size={18} /> },
   { key: 'notifications', label: 'Notifications', icon: <Bell size={18} /> },
   { key: 'securite', label: 'Sécurité', icon: <Shield size={18} /> },
@@ -17,14 +17,14 @@ const TABS = [
 
 const THEMES = [
   { id: 'Emerald City', label: 'Vert Émeraude', primary: '#0D9488', accent: '#0D9488', bg: '#F0FDFA', desc: 'Thème officiel E-RH' },
-  { id: 'Forest Green', label: 'Vert Forêt',  primary: '#064E3B', accent: '#10B981', bg: '#D1FAE5', desc: 'Naturel & apaisant' },
+  { id: 'Forest Green', label: 'Vert Forêt', primary: '#064E3B', accent: '#10B981', bg: '#D1FAE5', desc: 'Naturel & apaisant' },
   { id: 'Royal Purple', label: 'Violet Royal', primary: '#4C1D95', accent: '#8B5CF6', bg: '#EDE9FE', desc: 'Moderne & distingué' },
-  { id: 'Ocean Blue',   label: 'Bleu Océan',  primary: '#1E3E6E', accent: '#3466A4', bg: '#F1F5F9', desc: 'Sérieux & professionnel' },
+  { id: 'Ocean Blue', label: 'Bleu Océan', primary: '#1E3E6E', accent: '#3466A4', bg: '#F1F5F9', desc: 'Sérieux & professionnel' },
 ];
 
 const DENSITIES = [
-  { id: 'Compact',  label: 'Compact',  icon: <Minimize2 size={15} />, desc: 'Plus de données visibles' },
-  { id: 'Normal',   label: 'Normal',   icon: <Layout    size={15} />, desc: 'Équilibre parfait' },
+  { id: 'Compact', label: 'Compact', icon: <Minimize2 size={15} />, desc: 'Plus de données visibles' },
+  { id: 'Normal', label: 'Normal', icon: <Layout size={15} />, desc: 'Équilibre parfait' },
 ];
 
 export default function Settings() {
@@ -57,7 +57,7 @@ export default function Settings() {
           <h1 className="text-3xl font-black text-[var(--primary-main)] dark:text-white tracking-tight">Paramètres</h1>
           <p className="text-slate-500 mt-1 font-medium italic">Personnalisez votre espace de travail et gérez vos préférences.</p>
         </div>
-        <button 
+        <button
           onClick={handleSave}
           disabled={loading}
           className="btn-primary flex items-center gap-2 px-6 py-2.5 shadow-xl shadow-emerald-900/10 active:scale-95 transition-transform"
@@ -100,7 +100,7 @@ export default function Settings() {
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-4">Thème de couleur</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {THEMES.map(t => (
-                        <button 
+                        <button
                           key={t.id}
                           onClick={() => { setTheme(t.id); toast.success(`Thème ${t.label} appliqué ✨`) }}
                           className={`flex flex-col p-4 rounded-2xl border-2 transition-all text-right group ${theme === t.id ? 'border-[var(--primary-main)] bg-teal-50/10' : 'border-slate-100 hover:border-slate-200'}`}
@@ -119,7 +119,7 @@ export default function Settings() {
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-4">Densité d'affichage</p>
                     <div className="space-y-3">
                       {DENSITIES.map(d => (
-                        <button 
+                        <button
                           key={d.id}
                           onClick={() => { setDensity(d.id); toast.success(`Mode ${d.label} activé`) }}
                           className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${density === d.id ? 'border-[var(--primary-main)] bg-teal-50/10' : 'border-slate-100 hover:border-slate-200'}`}
@@ -157,8 +157,8 @@ export default function Settings() {
                 ].map(field => (
                   <div key={field.key} className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">{field.label}</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue={(account as any)[field.key]}
                       className="form-input w-full"
                       placeholder={field.placeholder}
@@ -168,9 +168,9 @@ export default function Settings() {
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Langue de l'interface</label>
-                  <select 
+                  <select
                     value={account.language}
-                    onChange={e => { const lng = e.target.value; setAccount(a => ({...a, language: lng})); i18n.changeLanguage(lng); toast.success(lng === 'ar' ? 'تم تغيير اللغة' : 'Langue modifiée') }}
+                    onChange={e => { const lng = e.target.value; setAccount(a => ({ ...a, language: lng })); i18n.changeLanguage(lng); toast.success(lng === 'ar' ? 'تم تغيير اللغة' : 'Langue modifiée') }}
                     className="form-input w-full appearance-none bg-slate-50"
                   >
                     <option value="fr">Français (officiel)</option>
@@ -201,8 +201,8 @@ export default function Settings() {
                         <p className="text-[10px] text-slate-400 font-bold">Ajoute une couche de sécurité via SMS ou App</p>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => setAccount(a => ({...a, twoFactor: !a.twoFactor}))}
+                    <button
+                      onClick={() => setAccount(a => ({ ...a, twoFactor: !a.twoFactor }))}
                       className={`w-12 h-6 rounded-full relative transition-all ${account.twoFactor ? 'bg-emerald-500' : 'bg-slate-200'}`}
                     >
                       <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${account.twoFactor ? 'right-7' : 'right-1'}`} />

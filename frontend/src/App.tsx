@@ -91,9 +91,11 @@ import NurseSalary from './pages/nurse/Salary'
 import { NurseEvaluations, NursePromotions, NurseLeaves, NurseDocuments, NurseNotifications } from './pages/nurse/PersonalSpace'
 
 import CandidatePortal from './pages/CandidatePortal'
+import FonctionnairePortal from './pages/FonctionnairePortal'
 
 // Auth
 import Login from './pages/auth/Login'
+import CandidatLogin from './pages/auth/CandidatLogin'
 import Register from './pages/auth/Register'
 
 // Public Pages
@@ -210,6 +212,7 @@ const App = () => {
         </Route>
         
         <Route path="/login" element={<Login />} />
+        <Route path="/candidat-login" element={<CandidatLogin />} />
         <Route path="/register" element={<Register />} />
 
         {/* Backoffice Layout (RH, Vet, Doctor, Nurse) */}
@@ -321,16 +324,8 @@ const App = () => {
         } />
 
         <Route path="/portail/fonctionnaire" element={
-          <ProtectedRoute allowedRoles={['doctor', 'nurse', 'veterinarian', 'rh', 'admin']}>
-            <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center p-10">
-              <div className="text-center p-12 bg-white rounded-3xl shadow-xl border border-emerald-100 max-w-xl w-full">
-                <h1 className="text-4xl mb-4 text-emerald-800 font-extrabold">Espace Personnel</h1>
-                <p className="text-slate-500">Ici vous pouvez consulter votre profil، vos salaires et gérer vos demandes de congés.</p>
-                <div className="mt-8 flex justify-center gap-4">
-                   <button className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-bold shadow-lg shadow-emerald-200">Voir mon profil</button>
-                </div>
-              </div>
-            </div>
+          <ProtectedRoute allowedRoles={['doctor', 'nurse', 'veterinarian', 'rh', 'admin', 'fonctionnaire']}>
+            <FonctionnairePortal />
           </ProtectedRoute>
         } />
 

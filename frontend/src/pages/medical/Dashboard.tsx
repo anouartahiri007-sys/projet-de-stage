@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { 
-  Users, Activity, Calendar, FileText, 
-  Clock, CheckCircle, AlertCircle, Plus, 
+import {
+  Users, Activity, Calendar, FileText,
+  Clock, CheckCircle, AlertCircle, Plus,
   Search, TrendingUp, Bell, ChevronRight,
   ArrowUpRight, MapPin, UserCheck, Stethoscope,
   ClipboardList, FilePlus
@@ -48,7 +48,7 @@ const MedicalDashboard = () => {
 
   return (
     <div className="animate-slide-up space-y-8 pb-12">
-      
+
       {/* --- STATS GRID --- */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
@@ -69,7 +69,7 @@ const MedicalDashboard = () => {
 
       {/* --- MAIN CONTENT GRID --- */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* APPOINTMENTS */}
         <section className="lg:col-span-4 gov-card overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-gray-50/30">
@@ -132,13 +132,13 @@ const MedicalDashboard = () => {
         <section className="lg:col-span-4 space-y-8">
           <div className="gov-card p-6">
             <h2 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-               <TrendingUp size={20} className="text-emerald-600" />
-               إجراءات سريعة
+              <TrendingUp size={20} className="text-emerald-600" />
+              إجراءات سريعة
             </h2>
             <div className="grid grid-cols-2 gap-4">
               {quickActions.map((action, i) => (
-                <button 
-                  key={i} 
+                <button
+                  key={i}
                   onClick={action.onClick}
                   className="flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-50 bg-slate-50/50 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 transition-all group"
                 >
@@ -159,8 +159,8 @@ const MedicalDashboard = () => {
 
           <div className="gov-card p-6">
             <h2 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-               <Bell size={20} className="text-emerald-600" />
-               آخر الإشعارات
+              <Bell size={20} className="text-emerald-600" />
+              آخر الإشعارات
             </h2>
             <div className="space-y-4">
               {[
@@ -169,11 +169,11 @@ const MedicalDashboard = () => {
                 { title: 'نتيجة تحليل مخبري متوفرة للمريض سعاد الحاجي', time: 'منذ 3 ساعات', type: 'warning' },
               ].map((item, i) => (
                 <div key={i} className="flex gap-3 items-start">
-                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${item.type === 'success' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
-                   <div>
-                      <p className="text-xs font-bold text-gray-700 leading-relaxed">{item.title}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">{item.time}</p>
-                   </div>
+                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${item.type === 'success' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-700 leading-relaxed">{item.title}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{item.time}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -195,14 +195,14 @@ const MedicalDashboard = () => {
             {RECENT_DIAGNOSIS.map(item => (
               <div key={item.id} className="p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between">
                 <div>
-                   <h3 className="font-bold text-sm text-gray-800">{item.name}</h3>
-                   <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
+                  <h3 className="font-bold text-sm text-gray-800">{item.name}</h3>
+                  <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
                 </div>
                 <div className="flex items-center gap-6">
-                   <p className="text-xs text-gray-400 font-bold">{item.date}</p>
-                   <button className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
-                      <FileText size={18} />
-                   </button>
+                  <p className="text-xs text-gray-400 font-bold">{item.date}</p>
+                  <button className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                    <FileText size={18} />
+                  </button>
                 </div>
               </div>
             ))}

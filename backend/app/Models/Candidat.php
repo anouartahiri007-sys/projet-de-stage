@@ -8,6 +8,7 @@ class Candidat extends Model
 {
     protected $fillable = [
         'user_id',
+        'code_candidat',
         'cin',
         'first_name',
         'last_name',

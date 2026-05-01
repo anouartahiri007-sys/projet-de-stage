@@ -1,16 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DollarSign, Search, Filter, Download, PieChart as PieIcon, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-
-const mockSalaries = [
-  { id: 1, name: 'أحمد العلوي', base: '8,500', bonuses: '1,200', deductions: '450', net: '9,250' },
-  { id: 2, name: 'فاطمة الزهراء بنعلي', base: '7,200', bonuses: '900', deductions: '380', net: '7,720' },
-  { id: 3, name: 'محمد أمين الناصري', base: '9,800', bonuses: '2,500', deductions: '620', net: '11,680' },
-  { id: 4, name: 'سمية آيت الطالب', base: '5,500', bonuses: '400', deductions: '210', net: '5,690' },
-  { id: 5, name: 'رضوان الوهابي', base: '6,800', bonuses: '800', deductions: '320', net: '7,280' },
-];
+import { api } from '../../lib/api';
+import toast from 'react-hot-toast';
 
 const Salaries = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [payrolls, setPayrolls] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPayrolls();
+  }, []);
+
+  const fetchPayrolls = async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.get('/payrolls');
+      setPayrolls(data);
+    } catch (error) {
+      toast.error('Erreur lors du chargement des salaires');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Calculate totals
+  const totalBase = payrolls.reduce((acc, p) => acc + Number(p.base_salary), 0);
+  const totalBonuses = payrolls.reduce((acc, p) => acc + Number(p.bonuses), 0);
+  const totalDeductions = payrolls.reduce((acc, p) => acc + Number(p.deductions), 0);
+  const totalNet = payrolls.reduce((acc, p) => acc + Number(p.net_salary), 0);
 
   return (
     <div className="space-y-6 animate-slide-up">
@@ -32,30 +50,30 @@ const Salaries = () => {
         <div className="gov-card p-6 bg-white border-b-4 border-emerald-500">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">كتلة الأجور الشهرية</p>
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-black text-gray-800">1,248,000 <span className="text-sm font-bold text-gray-400">درهم</span></h3>
+            <h3 className="text-2xl font-black text-gray-800">{totalNet.toLocaleString()} <span className="text-sm font-bold text-gray-400">درهم</span></h3>
             <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg flex items-center gap-1">
               <ArrowUpRight size={14} />
-              +2.4%
+              +0%
             </span>
           </div>
         </div>
         <div className="gov-card p-6 bg-white border-b-4 border-blue-500">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">متوسط الرواتب</p>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">إجمالي التعويضات</p>
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-black text-gray-800">7,850 <span className="text-sm font-bold text-gray-400">درهم</span></h3>
+            <h3 className="text-2xl font-black text-gray-800">{totalBonuses.toLocaleString()} <span className="text-sm font-bold text-gray-400">درهم</span></h3>
             <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg flex items-center gap-1">
               <ArrowUpRight size={14} />
-              +0.8%
+              +0%
             </span>
           </div>
         </div>
         <div className="gov-card p-6 bg-white border-b-4 border-rose-500">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">إجمالي الاقتطاعات</p>
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-black text-gray-800">54,200 <span className="text-sm font-bold text-gray-400">درهم</span></h3>
+            <h3 className="text-2xl font-black text-gray-800">{totalDeductions.toLocaleString()} <span className="text-sm font-bold text-gray-400">درهم</span></h3>
             <span className="text-xs font-black text-rose-600 bg-rose-50 px-2 py-1 rounded-lg flex items-center gap-1">
               <ArrowDownRight size={14} />
-              -1.2%
+              -0%
             </span>
           </div>
         </div>
@@ -94,26 +112,32 @@ const Salaries = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {mockSalaries.filter(s => s.name.includes(searchTerm)).map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
-                  <td className="p-4">
-                    <span className="font-bold text-gray-800">{item.name}</span>
-                  </td>
-                  <td className="p-4 font-medium text-gray-600">{item.base} درهم</td>
-                  <td className="p-4 font-bold text-emerald-600">+{item.bonuses} درهم</td>
-                  <td className="p-4 font-bold text-rose-500">-{item.deductions} درهم</td>
-                  <td className="p-4">
-                    <span className="px-3 py-1.5 bg-emerald-50 text-emerald-800 rounded-lg font-black text-base border border-emerald-100">
-                      {item.net} درهم
-                    </span>
-                  </td>
-                  <td className="p-4 text-center">
-                    <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all opacity-0 group-hover:opacity-100">
-                      <Download size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan={6} className="p-8 text-center text-gray-500">جاري التحميل...</td></tr>
+              ) : payrolls.length === 0 ? (
+                <tr><td colSpan={6} className="p-8 text-center text-gray-500">لا توجد بيانات للأجور حاليا.</td></tr>
+              ) : (
+                payrolls.filter(p => p.fonctionnaire?.user?.name?.includes(searchTerm) || '').map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
+                    <td className="p-4">
+                      <span className="font-bold text-gray-800">{item.fonctionnaire?.user?.name}</span>
+                    </td>
+                    <td className="p-4 font-medium text-gray-600">{Number(item.base_salary).toLocaleString()} درهم</td>
+                    <td className="p-4 font-bold text-emerald-600">+{Number(item.bonuses).toLocaleString()} درهم</td>
+                    <td className="p-4 font-bold text-rose-500">-{Number(item.deductions).toLocaleString()} درهم</td>
+                    <td className="p-4">
+                      <span className="px-3 py-1.5 bg-emerald-50 text-emerald-800 rounded-lg font-black text-base border border-emerald-100">
+                        {Number(item.net_salary).toLocaleString()} درهم
+                      </span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                        <Download size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

@@ -21,7 +21,7 @@ const EmployeeList = () => {
           <h1 className="text-2xl font-bold text-gray-800">إدارة الموظفين</h1>
           <p className="text-sm text-gray-500 mt-1">الرئيسية / إدارة الموظفين / قائمة الموظفين</p>
         </div>
-        <button 
+        <button
           onClick={() => navigate('/rh/employees/add')}
           className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm"
         >
@@ -35,9 +35,9 @@ const EmployeeList = () => {
         <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center bg-gray-50/50">
           <div className="relative w-full md:w-80">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="ابحث عن موظف..." 
+            <input
+              type="text"
+              placeholder="ابحث عن موظف..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-4 pr-10 py-2 border border-gray-200 rounded-lg outline-none focus:border-emerald-500 text-sm"
@@ -78,11 +78,10 @@ const EmployeeList = () => {
                   <td className="p-4 text-sm font-medium text-gray-700">{emp.role}</td>
                   <td className="p-4 text-sm font-medium text-gray-700">{emp.department}</td>
                   <td className="p-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                      emp.status === 'نشط' ? 'bg-emerald-100 text-emerald-700' :
-                      emp.status === 'في عطلة' ? 'bg-amber-100 text-amber-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${emp.status === 'نشط' ? 'bg-emerald-100 text-emerald-700' :
+                        emp.status === 'في عطلة' ? 'bg-amber-100 text-amber-700' :
+                          'bg-red-100 text-red-700'
+                      }`}>
                       {emp.status}
                     </span>
                   </td>
@@ -98,7 +97,7 @@ const EmployeeList = () => {
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination placeholder */}
         <div className="p-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
           <span>عرض 1 إلى 5 من 248 موظف</span>

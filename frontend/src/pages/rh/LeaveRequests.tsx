@@ -1,15 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CalendarDays, Check, X, Search, Filter, Clock } from 'lucide-react';
-
-const mockLeaveRequests = [
-  { id: 1, name: 'فاطمة الزهراء الإدريسي', type: 'سنوية', status: 'pending', duration: '5 أيام', start: '2024-05-20', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80' },
-  { id: 2, name: 'أحمد العلوي', type: 'إدارية', status: 'approved', duration: '2 أيام', start: '2024-05-15', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' },
-  { id: 3, name: 'محمد أمين الناصري', type: 'مرضية', status: 'pending', duration: '3 أيام', start: '2024-05-22', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80' },
-  { id: 4, name: 'سمية آيت الطالب', type: 'سنوية', status: 'rejected', duration: '10 أيام', start: '2024-06-01', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80' },
-];
+import { api } from '../../lib/api';
+import toast from 'react-hot-toast';
 
 const LeaveRequests = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [leaveRequests, setLeaveRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchLeaves();
+  }, []);
+
+  const fetchLeaves = async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.get('/leaves');
+      setLeaveRequests(data);
+    } catch (error) {
+      toast.error('Erreur lors du chargement des demandes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateStatus = async (id: number, status: 'approved' | 'rejected') => {
+    try {
+      await api.patch(`/leaves/${id}/status`, { status });
+      toast.success(status === 'approved' ? 'Demande approuvée' : 'Demande rejetée');
+      fetchLeaves();
+    } catch (error) {
+      toast.error('Erreur de mise à jour');
+    }
+  };
 
   return (
     <div className="space-y-6 animate-slide-up">
@@ -41,22 +64,29 @@ const LeaveRequests = () => {
         </div>
 
         <div className="divide-y divide-gray-100">
-          {mockLeaveRequests.filter(r => r.name.includes(searchTerm)).map((request) => (
+          {loading ? (
+             <div className="p-8 text-center text-gray-500">جاري التحميل...</div>
+          ) : leaveRequests.length === 0 ? (
+             <div className="p-8 text-center text-gray-500">لا توجد طلبات عطل حاليا.</div>
+          ) : (
+          leaveRequests.filter(r => r.fonctionnaire?.user?.name?.includes(searchTerm) || '').map((request) => (
             <div key={request.id} className="p-6 hover:bg-gray-50/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
-                <img src={request.img} alt={request.name} className="w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-sm" />
+                <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm text-gray-400 font-bold">
+                  {request.fonctionnaire?.user?.name?.charAt(0) || 'U'}
+                </div>
                 <div>
-                  <h3 className="font-bold text-gray-800 text-base">{request.name}</h3>
+                  <h3 className="font-bold text-gray-800 text-base">{request.fonctionnaire?.user?.name}</h3>
                   <div className="flex items-center gap-3 mt-1">
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                      request.type === 'سنوية' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-                      request.type === 'مرضية' ? 'bg-rose-50 text-rose-700 border-rose-100' : 'bg-blue-50 text-blue-700 border-blue-100'
+                      request.type === 'annual' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                      request.type === 'sick' ? 'bg-rose-50 text-rose-700 border-rose-100' : 'bg-blue-50 text-blue-700 border-blue-100'
                     }`}>
                       {request.type}
                     </span>
                     <span className="text-[11px] text-gray-400 font-bold flex items-center gap-1">
                       <Clock size={12} />
-                      {request.duration}
+                      تاريخ النهاية: {request.end_date}
                     </span>
                   </div>
                 </div>
@@ -65,17 +95,17 @@ const LeaveRequests = () => {
               <div className="flex items-center gap-8">
                 <div className="text-right">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">تاريخ البدء</p>
-                  <p className="text-sm font-bold text-gray-700">{request.start}</p>
+                  <p className="text-sm font-bold text-gray-700">{request.start_date}</p>
                 </div>
                 
                 <div className="flex items-center gap-2">
                   {request.status === 'pending' ? (
                     <>
-                      <button className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-100">
+                      <button onClick={() => handleUpdateStatus(request.id, 'approved')} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-100">
                         <Check size={14} />
                         قبول
                       </button>
-                      <button className="flex items-center gap-1.5 px-4 py-2 bg-white border border-rose-200 text-rose-600 rounded-lg text-xs font-bold hover:bg-rose-50 transition-all">
+                      <button onClick={() => handleUpdateStatus(request.id, 'rejected')} className="flex items-center gap-1.5 px-4 py-2 bg-white border border-rose-200 text-rose-600 rounded-lg text-xs font-bold hover:bg-rose-50 transition-all">
                         <X size={14} />
                         رفض
                       </button>
@@ -90,7 +120,8 @@ const LeaveRequests = () => {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
     </div>
@@ -98,3 +129,4 @@ const LeaveRequests = () => {
 };
 
 export default LeaveRequests;
+

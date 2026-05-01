@@ -1,4 +1,4 @@
-import { ArrowRight, Save, X, User, Syringe, Clock, Calendar, FileText } from 'lucide-react';
+import { ArrowRight, Save, X, User, Syringe, Clock, Calendar, FileText, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AddTreatment = () => {

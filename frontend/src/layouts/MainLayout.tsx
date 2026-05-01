@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Home, Users, UserPlus, Shield, Network, 
-  List, Briefcase, TrendingUp, Star, History, 
-  Route, DollarSign, Gift, ScrollText, Calendar, 
-  CalendarDays, CalendarCheck, FileText, FilePlus, 
+import {
+  Home, Users, UserPlus, Shield, Network,
+  List, Briefcase, TrendingUp, Star, History,
+  Route, DollarSign, Gift, ScrollText, Calendar,
+  CalendarDays, CalendarCheck, FileText, FilePlus,
   Bell, BarChart3, PieChart, Menu, ChevronDown,
   PawPrint, Activity, Syringe, AlertTriangle, User as UserIcon, LogOut,
   ClipboardList
@@ -21,7 +21,7 @@ const MainLayout = () => {
     document.documentElement.dir = 'rtl';
     document.documentElement.lang = 'ar';
     return () => {
-      document.documentElement.dir = 'ltr'; 
+      document.documentElement.dir = 'ltr';
       document.documentElement.lang = 'fr';
     };
   }, []);
@@ -194,18 +194,18 @@ const MainLayout = () => {
     }
   ];
 
-  const menuSections = 
+  const menuSections =
     user?.role === 'nurse' ? nurseMenu :
-    user?.role === 'veterinarian' ? vetMenu : 
-    user?.role === 'doctor' ? medicalMenu : 
-    rhMenu;
+      user?.role === 'veterinarian' ? vetMenu :
+        user?.role === 'doctor' ? medicalMenu :
+          rhMenu;
 
   return (
     <div className="flex h-screen bg-slate-50 text-gray-800 font-sans overflow-hidden" dir="rtl">
-      
+
       {/* ── Sidebar ─────────────────────────────── */}
       <aside className={`bg-white border-l border-gray-200 flex flex-col transition-all duration-300 z-30 flex-shrink-0 shadow-sm ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
-        
+
         {/* Brand */}
         <div className="bg-[#0d5e3f] h-20 flex items-center px-4 gap-3 text-white flex-shrink-0">
           <div className="w-10 h-12 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded flex items-center justify-center font-bold text-sm shadow-md">
@@ -229,13 +229,12 @@ const MainLayout = () => {
                   const isActive = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
                   return (
                     <li key={i}>
-                      <Link 
+                      <Link
                         to={item.path}
-                        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
-                          isActive 
-                            ? 'bg-emerald-50 text-emerald-700 border-r-4 border-emerald-600' 
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-700 border-r-4 border-transparent'
-                        }`}
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${isActive
+                          ? 'bg-emerald-50 text-emerald-700 border-r-4 border-emerald-600'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-700 border-r-4 border-transparent'
+                          }`}
                       >
                         <span className={`${isActive ? 'text-emerald-600' : 'text-gray-400'}`}>{item.icon}</span>
                         {item.title}
@@ -246,22 +245,22 @@ const MainLayout = () => {
               </ul>
             </div>
           ))}
-          
+
           <div className="mt-8 pt-4 border-t border-gray-100">
-             <button 
-                onClick={handleLogout}
-                className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-             >
-                <LogOut size={20} />
-                تسجيل الخروج
-             </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+            >
+              <LogOut size={20} />
+              تسجيل الخروج
+            </button>
           </div>
         </div>
       </aside>
 
       {/* ── Main Area ───────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        
+
         {/* Topbar */}
         <header className="h-20 bg-white border-b border-gray-200 px-8 flex items-center justify-between shadow-sm z-20 flex-shrink-0">
           <div className="flex items-center gap-4">
@@ -297,15 +296,15 @@ const MainLayout = () => {
                   {user?.role === 'rh' ? 'مسؤولة الموارد البشرية' : user?.role === 'doctor' ? 'طبيب عام - مصلحة الصحة' : user?.role === 'nurse' ? 'ممرضة - مصلحة الصحة' : 'طبيب بيطري ممارس'}
                 </p>
               </div>
-              <img 
+              <img
                 src={
                   user?.role === 'doctor' ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" :
-                  user?.role === 'nurse' ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80" :
-                  user?.role === 'veterinarian' ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" : 
-                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
-                } 
-                alt="Profile" 
-                className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-emerald-500 transition-colors" 
+                    user?.role === 'nurse' ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80" :
+                      user?.role === 'veterinarian' ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" :
+                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
+                }
+                alt="Profile"
+                className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-emerald-500 transition-colors"
               />
             </div>
           </div>

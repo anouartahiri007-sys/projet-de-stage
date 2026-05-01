@@ -1,4 +1,4 @@
-import { BarChart3, TrendingUp, PawPrint, Activity, Syringe, FilePlus, Download, Filter, Calendar, PieChart, ArrowUpRight } from 'lucide-react';
+import { BarChart3, TrendingUp, PawPrint, Activity, Syringe, FilePlus, Download, Filter, Calendar, PieChart, ArrowUpRight, Info } from 'lucide-react';
 
 const VetReports = () => {
   return (

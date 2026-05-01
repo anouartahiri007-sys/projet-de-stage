@@ -1,4 +1,4 @@
-import { Bell, Check, Trash2, Calendar, Shield, Wallet, MessageSquare } from 'lucide-react';
+import { Bell, Check, Trash2, Calendar, Shield, Wallet, MessageSquare, CheckCircle } from 'lucide-react';
 
 const Notifications = () => {
   return (

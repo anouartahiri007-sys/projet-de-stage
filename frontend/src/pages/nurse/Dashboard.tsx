@@ -36,12 +36,11 @@ const NurseDashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <div key={i} className="gov-card p-6 flex items-center gap-5 group hover:scale-[1.02] transition-all">
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner group-hover:rotate-12 transition-transform ${
-              stat.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
-              stat.color === 'amber' ? 'bg-amber-50 text-amber-600' :
-              stat.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-              'bg-purple-50 text-purple-600'
-            }`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner group-hover:rotate-12 transition-transform ${stat.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
+                stat.color === 'amber' ? 'bg-amber-50 text-amber-600' :
+                  stat.color === 'blue' ? 'bg-blue-50 text-blue-600' :
+                    'bg-purple-50 text-purple-600'
+              }`}>
               {stat.icon}
             </div>
             <div>
@@ -98,11 +97,10 @@ const NurseDashboard = () => {
           <div className="divide-y divide-gray-50">
             {followUpCases.map((caseItem, i) => (
               <div key={i} className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4 group">
-                <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
-                  caseItem.severity === 'عالية' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
-                  caseItem.severity === 'متوسطة' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
-                  'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                }`}>
+                <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${caseItem.severity === 'عالية' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
+                    caseItem.severity === 'متوسطة' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                      'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                  }`}>
                   {caseItem.severity}
                 </span>
                 <div className="flex items-center gap-3 flex-1">

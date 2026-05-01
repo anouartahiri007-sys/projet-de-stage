@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { 
-  Users, Activity, ClipboardList, Shield, 
+import {
+  Users, Activity, ClipboardList, Shield,
   ArrowUpRight, ArrowDownRight, Clock,
   FileText, Award, Star, Bell, ChevronRight,
   TrendingUp, Calendar
@@ -8,27 +8,27 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const UserPlus = ({ size, className }: { size: number, className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" x2="19" y1="8" y2="14" /><line x1="22" x2="16" y1="11" y2="11" /></svg>
 );
 
 const RECENT_ACTIVITIES = [
-  { 
-    id: 1, name: 'Dr. Youssef Fassi', desc: 'Promotion à l\'échelon 4 approuvée', 
+  {
+    id: 1, name: 'Dr. Youssef Fassi', desc: 'Promotion à l\'échelon 4 approuvée',
     time: 'Il y a 2h', tag: 'Carrière', tagColor: 'text-emerald-700 bg-emerald-50 border-emerald-100',
     icon: <Award size={14} />
   },
-  { 
-    id: 2, name: 'Service de Médecine', desc: '12 nouveaux arrêtés générés', 
+  {
+    id: 2, name: 'Service de Médecine', desc: '12 nouveaux arrêtés générés',
     time: 'Il y a 5h', tag: 'Documents', tagColor: 'text-blue-700 bg-blue-50 border-blue-100',
     icon: <FileText size={14} />
   },
-  { 
-    id: 3, name: 'Direction de l\'Hôpital', desc: 'Recrutement de 5 infirmiers lancé', 
+  {
+    id: 3, name: 'Direction de l\'Hôpital', desc: 'Recrutement de 5 infirmiers lancé',
     time: 'Hier', tag: 'Recrutement', tagColor: 'text-amber-700 bg-amber-50 border-amber-100',
     icon: <UserPlus size={14} />
   },
-  { 
-    id: 4, name: 'Admin Système', desc: 'Synchronisation de la base de données terminée', 
+  {
+    id: 4, name: 'Admin Système', desc: 'Synchronisation de la base de données terminée',
     time: 'Il y a 2 jours', tag: 'Système', tagColor: 'text-slate-600 bg-slate-100 border-slate-200',
     icon: <Shield size={14} />
   }
@@ -60,12 +60,12 @@ const Dashboard = () => {
 
   return (
     <div className="animate-slide-up space-y-8 pb-12">
-      
+
       {/* --- HERO / WELCOME --- */}
       <section className="bg-gradient-to-br from-[var(--primary-main)] to-[#1E3E6E] rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-emerald-900/20">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-        
+
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-white/10">
@@ -112,7 +112,7 @@ const Dashboard = () => {
 
       {/* --- MAIN CONTENT GRID --- */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* RECENT ACTIVITY */}
         <section className="lg:col-span-8 gov-card overflow-hidden">
           <div className="p-8 border-b border-slate-100 flex items-center justify-between">
@@ -151,8 +151,8 @@ const Dashboard = () => {
             <h2 className="text-xl font-bold text-[var(--primary-main)] dark:text-white font-heading mb-5">Accès rapides</h2>
             <div className="grid grid-cols-2 gap-4">
               {quickActions.map((action, i) => (
-                <button 
-                  key={i} 
+                <button
+                  key={i}
                   onClick={action.onClick}
                   className="flex flex-col items-center justify-center p-6 rounded-3xl border border-slate-100 bg-slate-50/50 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 transition-all group"
                 >
