@@ -93,4 +93,12 @@ class CandidatureController extends Controller
 
         return response()->json($candidatures);
     }
+
+    /**
+     * Get all candidatures for HR Admin.
+     */
+    public function index()
+    {
+        return response()->json(Candidature::with(['candidat', 'concours'])->latest()->get());
+    }
 }

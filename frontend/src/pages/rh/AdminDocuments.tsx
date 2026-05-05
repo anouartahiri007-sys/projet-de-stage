@@ -1,93 +1,84 @@
 import { useState } from 'react';
-import { FileText, Search, Filter, Download, Plus, Folder, File } from 'lucide-react';
+import { FileText, Search, Filter, Download, Plus, Folder } from 'lucide-react';
+import { useLang } from '../../context/LangContext';
 
 const mockDocs = [
-  { id: 1, name: 'قرار التعيين - ياسين بومدين', category: 'قرارات إدارية', date: '2024-05-10', size: '1.2 MB', type: 'PDF' },
-  { id: 2, name: 'شهادة العمل - خديجة أمزال', category: 'شهادات', date: '2024-05-08', size: '450 KB', type: 'PDF' },
-  { id: 3, name: 'عقد التوظيف - سفيان الرويسي', category: 'عقود', date: '2024-05-01', size: '2.4 MB', type: 'DOCX' },
-  { id: 4, name: 'قرار ترقية - مريم الحاجي', category: 'قرارات إدارية', date: '2024-04-25', size: '1.1 MB', type: 'PDF' },
+  { id: 1, name: 'قرار التعيين - ياسين بومدين', nameFr: 'Décision de recrutement - Yassine', category: 'قرارات إدارية', catFr: 'Décisions', date: '2024-05-10', size: '1.2 MB', type: 'PDF' },
+  { id: 2, name: 'شهادة العمل - خديجة أمزال', nameFr: 'Attestation de travail - Khadija', category: 'شهادات', catFr: 'Attestations', date: '2024-05-08', size: '450 KB', type: 'PDF' },
 ];
 
 const AdminDocuments = () => {
+  const { t, lang } = useLang();
   const [searchTerm, setSearchTerm] = useState('');
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">الوثائق الإدارية</h1>
-          <p className="text-sm text-gray-500 mt-1">الرئيسية / الوثائق والإشعارات / مستودع الوثائق</p>
-        </div>
-        <div className="flex gap-2">
-          <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-md text-sm">
-            <Plus size={18} />
-            رفع وثيقة جديدة
-          </button>
+    <div className="animate-slide-up space-y-6" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${lang === 'ar' ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+        <button className="bg-[#0d5e3f] hover:bg-[#0a4a31] text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-emerald-900/10 active:scale-95 text-sm">
+          <Plus size={18} />
+          {lang === 'ar' ? 'رفع وثيقة جديدة' : 'Télécharger un doc'}
+        </button>
+        <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{t('adminDocuments')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('home')} / {t('adminDocuments')} / {t('adminDocuments')}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar Categories */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="gov-card p-6">
-            <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest text-emerald-700">
-              <Folder size={16} />
-              التصنيفات
+          <div className="gov-card p-8 border-b-4 border-b-[#0d5e3f]">
+            <h3 className={`font-black text-[10px] text-gray-800 dark:text-white mb-6 flex items-center gap-2 uppercase tracking-[0.2em] ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+              <Folder size={18} className="text-[#0d5e3f]" />
+              {lang === 'ar' ? 'التصنيفات' : 'Catégories'}
             </h3>
             <div className="space-y-2">
-              <div className="flex items-center justify-between p-2.5 bg-emerald-50 text-emerald-700 rounded-lg font-bold text-sm cursor-pointer border border-emerald-100 transition-all">
-                <span>كل الوثائق</span>
-                <span className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-emerald-100">42</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 hover:bg-gray-50 text-gray-600 rounded-lg font-bold text-sm cursor-pointer transition-all">
-                <span>قرارات إدارية</span>
-                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full">15</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 hover:bg-gray-50 text-gray-600 rounded-lg font-bold text-sm cursor-pointer transition-all">
-                <span>شهادات العمل</span>
-                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full">12</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 hover:bg-gray-50 text-gray-600 rounded-lg font-bold text-sm cursor-pointer transition-all">
-                <span>عقود التوظيف</span>
-                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full">08</span>
-              </div>
+              {[
+                { label: lang === 'ar' ? 'كل الوثائق' : 'Tous les docs', count: 42, active: true },
+                { label: lang === 'ar' ? 'قرارات إدارية' : 'Décisions', count: 15 },
+                { label: lang === 'ar' ? 'شهادات العمل' : 'Attestations', count: 12 },
+                { label: lang === 'ar' ? 'عقود التوظيف' : 'Contrats', count: 8 },
+              ].map((cat, i) => (
+                <div key={i} className={`flex items-center justify-between p-3.5 rounded-xl font-bold text-xs cursor-pointer transition-all border ${cat.active ? 'bg-emerald-50 text-[#0d5e3f] border-emerald-100' : 'text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-50 dark:hover:bg-slate-900'} ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
+                  <span>{cat.label}</span>
+                  <span className={`text-[10px] px-2.5 py-0.5 rounded-full border ${cat.active ? 'bg-white border-emerald-100' : 'bg-gray-100 dark:bg-slate-700 border-transparent'}`}>{cat.count}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Documents List */}
         <div className="lg:col-span-3">
           <div className="gov-card p-0 overflow-hidden">
-            <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center bg-gray-50/30">
+            <div className={`p-6 border-b border-gray-100 dark:border-slate-700 flex flex-col md:flex-row gap-4 justify-between items-center bg-gray-50/30 dark:bg-slate-900/30 ${lang === 'ar' ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
               <div className="relative w-full md:w-80">
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Search className={`absolute ${lang === 'ar' ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-gray-400`} size={18} />
                 <input 
                   type="text" 
-                  placeholder="ابحث عن وثيقة..." 
+                  placeholder={lang === 'ar' ? 'ابحث عن وثيقة...' : 'Rechercher un doc...'} 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-4 pr-10 py-2.5 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-sm bg-white shadow-sm"
+                  className={`w-full ${lang === 'ar' ? 'pr-12 text-right' : 'pl-12 text-left'} py-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-[#0d5e3f] text-sm transition-all`}
                 />
               </div>
-              <button className="flex items-center gap-2 border border-gray-200 bg-white px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50">
+              <button className="flex items-center gap-2 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
                 <Filter size={16} />
-                تصفية
+                {t('filters')}
               </button>
             </div>
 
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-slate-700">
               {mockDocs.filter(d => d.name.includes(searchTerm)).map((doc) => (
-                <div key={doc.id} className="p-5 hover:bg-emerald-50/20 transition-all flex items-center justify-between group">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110 ${
+                <div key={doc.id} className={`p-6 hover:bg-emerald-50/10 transition-all flex items-center justify-between group ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
+                  <div className={`flex items-center gap-5 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all group-hover:scale-110 shadow-sm ${
                       doc.type === 'PDF' ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-blue-50 text-blue-600 border-blue-100'
                     }`}>
-                      <FileText size={22} />
+                      <FileText size={26} />
                     </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800 text-sm mb-1">{doc.name}</h3>
-                      <div className="flex items-center gap-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        <span>{doc.category}</span>
+                    <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+                      <h3 className="font-bold text-gray-800 dark:text-white text-base mb-1">{lang === 'ar' ? doc.name : doc.nameFr}</h3>
+                      <div className={`flex items-center gap-3 text-[10px] font-black text-gray-400 uppercase tracking-widest ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
+                        <span className="text-[#0d5e3f]">{lang === 'ar' ? doc.category : doc.catFr}</span>
                         <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
                         <span>{doc.date}</span>
                         <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
@@ -95,11 +86,9 @@ const AdminDocuments = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="تحميل">
-                      <Download size={18} />
-                    </button>
-                  </div>
+                  <button className="p-3 text-slate-300 hover:text-[#0d5e3f] hover:bg-emerald-50 rounded-xl transition-all opacity-0 group-hover:opacity-100">
+                    <Download size={22} />
+                  </button>
                 </div>
               ))}
             </div>

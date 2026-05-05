@@ -6,16 +6,23 @@ import { Loader2, AlertCircle, Home } from 'lucide-react';
 import MainLayout from './layouts/MainLayout'
 import { useAuthStore } from './lib/auth'
 import { useSettingsStore } from './lib/settingsStore'
+import { LangProvider } from './context/LangContext'
 
 // Pages
 import Dashboard from './pages/Dashboard'
 import EmployeeProfile from './features/employees/EmployeeProfile'
 import Recruitment from './pages/Recruitment'
 import Settings from './pages/Settings'
+import Training from './pages/Training'
+import Career from './pages/Career'
+import Reports from './pages/Reports'
+import AdministrativeActForm from './pages/rh/acts/AdministrativeActForm'
+import AdministrativeActs from './pages/rh/acts/AdministrativeActs'
 
 // RH Pages
 import EmployeeList from './pages/rh/EmployeeList'
 import AddEmployee from './pages/rh/AddEmployee'
+import EditEmployee from './pages/rh/EditEmployee'
 import RolesPermissions from './pages/rh/RolesPermissions'
 import Organigramme from './pages/rh/Organigramme'
 import Grades from './pages/rh/Grades'
@@ -24,9 +31,6 @@ import Promotions from './pages/rh/Promotions'
 import PerformanceEval from './pages/rh/PerformanceEval'
 import EvalHistory from './pages/rh/EvalHistory'
 import CareerPath from './pages/rh/CareerPath'
-import Salaries from './pages/rh/Salaries'
-import Bonuses from './pages/rh/Bonuses'
-import PaymentHistory from './pages/rh/PaymentHistory'
 import LeaveRequests from './pages/rh/LeaveRequests'
 import LeaveBalance from './pages/rh/LeaveBalance'
 import LeaveCalendar from './pages/rh/LeaveCalendar'
@@ -50,7 +54,6 @@ import Epidemics from './pages/veterinary/Epidemics'
 import VetReports from './pages/veterinary/VetReports'
 import VetProfile from './pages/veterinary/Profile'
 import VetAdminStatus from './pages/veterinary/AdminStatus'
-import VetSalary from './pages/veterinary/Salary'
 import VetEvaluations from './pages/veterinary/Evaluations'
 import VetPromotions from './pages/veterinary/Promotions'
 import VetLeaves from './pages/veterinary/Leaves'
@@ -68,7 +71,6 @@ import MedIssueCertificate from './pages/medical/IssueCertificate'
 import FollowUp from './pages/medical/FollowUp'
 import MedProfile from './pages/medical/Profile'
 import MedAdminStatus from './pages/medical/AdminStatus'
-import MedSalary from './pages/medical/Salary'
 import MedEvaluations from './pages/medical/Evaluations'
 import MedPromotions from './pages/medical/Promotions'
 import MedLeaves from './pages/medical/Leaves'
@@ -87,7 +89,6 @@ import NurseHealthReports from './pages/nurse/HealthReports'
 import NurseAppointments from './pages/nurse/Appointments'
 import NurseProfile from './pages/nurse/Profile'
 import NurseAdminStatus from './pages/nurse/AdminStatus'
-import NurseSalary from './pages/nurse/Salary'
 import { NurseEvaluations, NursePromotions, NurseLeaves, NurseDocuments, NurseNotifications } from './pages/nurse/PersonalSpace'
 
 import CandidatePortal from './pages/CandidatePortal'
@@ -115,7 +116,8 @@ const ProtectedRoute = ({ children, allowedRoles }: { children?: React.ReactNode
   
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     switch (user.role) {
-      case 'rh': return <Navigate to="/dashboard" replace />;
+      case 'rh':
+      case 'rh_admin': return <Navigate to="/dashboard" replace />;
       case 'veterinarian': return <Navigate to="/dashboard" replace />;
       case 'doctor': return <Navigate to="/dashboard" replace />;
       case 'nurse': return <Navigate to="/dashboard" replace />;
@@ -195,144 +197,146 @@ const App = () => {
   }, [isDarkMode])
 
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<LoadingFallback />}>
-        <Toaster position="top-right" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white' }} />
-        <Routes>
-        {/* Public Routes */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<Landing />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/news" element={<News />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/announcements" element={<About />} />
-          <Route path="/documents" element={<PublicDocuments />} />
-          <Route path="/contact" element={<Contact />} />
-        </Route>
-        
-        <Route path="/login" element={<Login />} />
-        <Route path="/candidat-login" element={<CandidatLogin />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* Backoffice Layout (RH, Vet, Doctor, Nurse) */}
-        <Route path="/" element={
-          <ProtectedRoute allowedRoles={['rh', 'veterinarian', 'doctor', 'nurse', 'admin']}>
-            <MainLayout />
-          </ProtectedRoute>
-        }>
-          <Route path="dashboard" element={<DashboardSelector />} />
+    <LangProvider>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <Toaster position="top-right" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white' }} />
+          <Routes>
+          {/* Public Routes */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Landing />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/announcements" element={<About />} />
+            <Route path="/documents" element={<PublicDocuments />} />
+            <Route path="/contact" element={<Contact />} />
+          </Route>
           
-          {/* Common Profile View */}
-          <Route path="personnel/:id" element={<EmployeeProfile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/candidat-login" element={<CandidatLogin />} />
+          <Route path="/register" element={<Register />} />
 
-          {/* RH Specific Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['rh', 'admin']} />}>
-            <Route path="rh/employees" element={<EmployeeList />} />
-            <Route path="rh/employees/add" element={<AddEmployee />} />
-            <Route path="rh/roles" element={<RolesPermissions />} />
-            <Route path="rh/organigramme" element={<Organigramme />} />
-            <Route path="rh/grades" element={<Grades />} />
-            <Route path="rh/admin-status" element={<AdminStatus />} />
-            <Route path="rh/promotions" element={<Promotions />} />
-            <Route path="rh/performance" element={<PerformanceEval />} />
-            <Route path="rh/eval-history" element={<EvalHistory />} />
-            <Route path="rh/career-path" element={<CareerPath />} />
-            <Route path="rh/salaries" element={<Salaries />} />
-            <Route path="rh/bonuses" element={<Bonuses />} />
-            <Route path="rh/payment-history" element={<PaymentHistory />} />
-            <Route path="rh/leave-requests" element={<LeaveRequests />} />
-            <Route path="rh/leave-balance" element={<LeaveBalance />} />
-            <Route path="rh/leave-calendar" element={<LeaveCalendar />} />
-            <Route path="rh/documents" element={<AdminDocuments />} />
-            <Route path="rh/documents/create" element={<CreateDocument />} />
-            <Route path="rh/notifications" element={<NotificationsPage />} />
-            <Route path="rh/reports" element={<HRReports />} />
-            <Route path="rh/statistics" element={<Statistics />} />
+          {/* Backoffice Layout (RH, Vet, Doctor, Nurse) */}
+          <Route path="/" element={
+            <ProtectedRoute allowedRoles={['rh', 'rh_admin', 'veterinarian', 'doctor', 'nurse', 'admin']}>
+              <MainLayout />
+            </ProtectedRoute>
+          }>
+            <Route path="dashboard" element={<DashboardSelector />} />
+            
+            {/* Common Profile View */}
+            <Route path="personnel/:id" element={<EmployeeProfile />} />
+
+            {/* RH Specific Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['rh', 'rh_admin', 'admin']} />}>
+              <Route path="rh/employees" element={<EmployeeList />} />
+              <Route path="rh/employees/add" element={<AddEmployee />} />
+              <Route path="rh/employees/edit/:id" element={<EditEmployee />} />
+              <Route path="rh/recrutement" element={<Recruitment />} />
+              <Route path="rh/roles" element={<RolesPermissions />} />
+              <Route path="rh/organigramme" element={<Organigramme />} />
+              <Route path="rh/grades" element={<Grades />} />
+              <Route path="rh/admin-status" element={<AdminStatus />} />
+              <Route path="rh/promotions" element={<Promotions />} />
+              <Route path="rh/performance" element={<PerformanceEval />} />
+              <Route path="rh/eval-history" element={<EvalHistory />} />
+              <Route path="rh/career-path" element={<CareerPath />} />
+              <Route path="rh/leave-balance" element={<LeaveBalance />} />
+              <Route path="rh/documents" element={<AdminDocuments />} />
+              <Route path="rh/documents/create" element={<CreateDocument />} />
+              <Route path="rh/notifications" element={<NotificationsPage />} />
+              <Route path="rh/reports" element={<HRReports />} />
+              <Route path="rh/statistics" element={<Statistics />} />
+              <Route path="rh/acts" element={<AdministrativeActs />} />
+              <Route path="rh/acts/new" element={<AdministrativeActForm />} />
+              <Route path="rh/acts/create/:type" element={<AdministrativeActForm />} />
+              <Route path="rh/acts/:type/:id" element={<AdministrativeActForm />} />
+            </Route>
+
+            {/* Veterinary Specific Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['veterinarian', 'admin']} />}>
+              <Route path="veterinaire/animals" element={<Animals />} />
+              <Route path="veterinaire/animals/add" element={<AddAnimal />} />
+              <Route path="veterinaire/health" element={<HealthSituations />} />
+              <Route path="veterinaire/health/register" element={<RegisterHealthCase />} />
+              <Route path="veterinaire/vaccinations" element={<Vaccinations />} />
+              <Route path="veterinaire/vaccinations/add" element={<RegisterVaccination />} />
+              <Route path="veterinaire/certificates" element={<Certificates />} />
+              <Route path="veterinaire/certificates/issue" element={<IssueCertificate />} />
+              <Route path="veterinaire/epidemics" element={<Epidemics />} />
+              <Route path="veterinaire/reports" element={<VetReports />} />
+              <Route path="veterinaire/profile" element={<VetProfile />} />
+              <Route path="veterinaire/admin-status" element={<VetAdminStatus />} />
+              <Route path="veterinaire/evaluations" element={<VetEvaluations />} />
+              <Route path="veterinaire/promotions" element={<VetPromotions />} />
+              <Route path="veterinaire/leaves" element={<VetLeaves />} />
+              <Route path="veterinaire/documents" element={<VetDocuments />} />
+              <Route path="veterinaire/notifications" element={<VetNotifications />} />
+            </Route>
+
+            {/* Medical Specific Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['doctor', 'admin']} />}>
+              <Route path="medical/patients" element={<Patients />} />
+              <Route path="medical/patients/add" element={<AddPatient />} />
+              <Route path="medical/appointments" element={<MedAppointments />} />
+              <Route path="medical/diagnosis" element={<Diagnosis />} />
+              <Route path="medical/certificates" element={<MedCertificates />} />
+              <Route path="medical/certificates/issue" element={<MedIssueCertificate />} />
+              <Route path="medical/follow-up" element={<FollowUp />} />
+              <Route path="medical/profile" element={<MedProfile />} />
+              <Route path="medical/admin-status" element={<MedAdminStatus />} />
+              <Route path="medical/evaluations" element={<MedEvaluations />} />
+              <Route path="medical/promotions" element={<MedPromotions />} />
+              <Route path="medical/leaves" element={<MedLeaves />} />
+              <Route path="medical/documents" element={<MedDocuments />} />
+              <Route path="medical/notifications" element={<MedNotifications />} />
+            </Route>
+
+            {/* Nurse Specific Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['nurse', 'admin']} />}>
+              <Route path="nurse/patients" element={<NursePatients />} />
+              <Route path="nurse/follow-up" element={<NurseFollowUp />} />
+              <Route path="nurse/treatments" element={<NurseTreatments />} />
+              <Route path="nurse/treatments/add" element={<AddTreatment />} />
+              <Route path="nurse/vitals" element={<NurseVitalSigns />} />
+              <Route path="nurse/vitals/register" element={<RegisterVitalSign />} />
+              <Route path="nurse/reports" element={<NurseHealthReports />} />
+              <Route path="nurse/appointments" element={<NurseAppointments />} />
+              <Route path="nurse/profile" element={<NurseProfile />} />
+              <Route path="nurse/admin-status" element={<NurseAdminStatus />} />
+              <Route path="nurse/evaluations" element={<NurseEvaluations />} />
+              <Route path="nurse/promotions" element={<NursePromotions />} />
+              <Route path="nurse/leaves" element={<NurseLeaves />} />
+              <Route path="nurse/documents" element={<NurseDocuments />} />
+              <Route path="nurse/notifications" element={<NurseNotifications />} />
+            </Route>
+
+            <Route path="formation"   element={<Training />} />
+            <Route path="carriere"    element={<Career />} />
+            <Route path="rapports"     element={<Reports />} />
+            <Route path="parametres"  element={<Settings />} />
           </Route>
 
-          {/* Veterinary Specific Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['veterinarian', 'admin']} />}>
-            <Route path="veterinaire/animals" element={<Animals />} />
-            <Route path="veterinaire/animals/add" element={<AddAnimal />} />
-            <Route path="veterinaire/health" element={<HealthSituations />} />
-            <Route path="veterinaire/health/register" element={<RegisterHealthCase />} />
-            <Route path="veterinaire/vaccinations" element={<Vaccinations />} />
-            <Route path="veterinaire/vaccinations/add" element={<RegisterVaccination />} />
-            <Route path="veterinaire/certificates" element={<Certificates />} />
-            <Route path="veterinaire/certificates/issue" element={<IssueCertificate />} />
-            <Route path="veterinaire/epidemics" element={<Epidemics />} />
-            <Route path="veterinaire/reports" element={<VetReports />} />
-            <Route path="veterinaire/profile" element={<VetProfile />} />
-            <Route path="veterinaire/admin-status" element={<VetAdminStatus />} />
-            <Route path="veterinaire/salary" element={<VetSalary />} />
-            <Route path="veterinaire/evaluations" element={<VetEvaluations />} />
-            <Route path="veterinaire/promotions" element={<VetPromotions />} />
-            <Route path="veterinaire/leaves" element={<VetLeaves />} />
-            <Route path="veterinaire/documents" element={<VetDocuments />} />
-            <Route path="veterinaire/notifications" element={<VetNotifications />} />
-          </Route>
+          {/* Other Specific Portals */}
+          <Route path="/portail/candidat" element={
+            <ProtectedRoute allowedRoles={['candidat']}>
+              <CandidatePortal />
+            </ProtectedRoute>
+          } />
 
-          {/* Medical Specific Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['doctor', 'admin']} />}>
-            <Route path="medical/patients" element={<Patients />} />
-            <Route path="medical/patients/add" element={<AddPatient />} />
-            <Route path="medical/appointments" element={<MedAppointments />} />
-            <Route path="medical/diagnosis" element={<Diagnosis />} />
-            <Route path="medical/certificates" element={<MedCertificates />} />
-            <Route path="medical/certificates/issue" element={<MedIssueCertificate />} />
-            <Route path="medical/follow-up" element={<FollowUp />} />
-            <Route path="medical/profile" element={<MedProfile />} />
-            <Route path="medical/admin-status" element={<MedAdminStatus />} />
-            <Route path="medical/salary" element={<MedSalary />} />
-            <Route path="medical/evaluations" element={<MedEvaluations />} />
-            <Route path="medical/promotions" element={<MedPromotions />} />
-            <Route path="medical/leaves" element={<MedLeaves />} />
-            <Route path="medical/documents" element={<MedDocuments />} />
-            <Route path="medical/notifications" element={<MedNotifications />} />
-          </Route>
+          <Route path="/portail/fonctionnaire" element={
+            <ProtectedRoute allowedRoles={['doctor', 'nurse', 'veterinarian', 'rh', 'rh_admin', 'admin', 'fonctionnaire']}>
+              <FonctionnairePortal />
+            </ProtectedRoute>
+          } />
 
-          {/* Nurse Specific Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['nurse', 'admin']} />}>
-            <Route path="nurse/patients" element={<NursePatients />} />
-            <Route path="nurse/follow-up" element={<NurseFollowUp />} />
-            <Route path="nurse/treatments" element={<NurseTreatments />} />
-            <Route path="nurse/treatments/add" element={<AddTreatment />} />
-            <Route path="nurse/vitals" element={<NurseVitalSigns />} />
-            <Route path="nurse/vitals/register" element={<RegisterVitalSign />} />
-            <Route path="nurse/reports" element={<NurseHealthReports />} />
-            <Route path="nurse/appointments" element={<NurseAppointments />} />
-            <Route path="nurse/profile" element={<NurseProfile />} />
-            <Route path="nurse/admin-status" element={<NurseAdminStatus />} />
-            <Route path="nurse/salary" element={<NurseSalary />} />
-            <Route path="nurse/evaluations" element={<NurseEvaluations />} />
-            <Route path="nurse/promotions" element={<NursePromotions />} />
-            <Route path="nurse/leaves" element={<NurseLeaves />} />
-            <Route path="nurse/documents" element={<NurseDocuments />} />
-            <Route path="nurse/notifications" element={<NurseNotifications />} />
-          </Route>
-
-          <Route path="recrutement" element={<Recruitment />} />
-          <Route path="parametres"  element={<Settings />} />
-        </Route>
-
-        {/* Other Specific Portals */}
-        <Route path="/portail/candidat" element={
-          <ProtectedRoute allowedRoles={['candidat']}>
-            <CandidatePortal />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/portail/fonctionnaire" element={
-          <ProtectedRoute allowedRoles={['doctor', 'nurse', 'veterinarian', 'rh', 'admin', 'fonctionnaire']}>
-            <FonctionnairePortal />
-          </ProtectedRoute>
-        } />
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
-  </ErrorBoundary>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    </LangProvider>
   )
 }
 

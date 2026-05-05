@@ -45,6 +45,7 @@ use App\Http\Controllers\ConcoursController;
 use App\Http\Controllers\CandidatureController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\AdministrativeActController;
 
 Route::middleware(['auth:api'])->group(function () {
     // Public (authenticated candidates can read)
@@ -79,16 +80,29 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
     // HR Admin Actions
-    Route::middleware('role:rh_admin')->group(function () {
+    Route::middleware('role:rh,rh_admin,admin')->group(function () {
         Route::post('/concours', [ConcoursController::class, 'store']);
+        Route::get('/candidatures', [CandidatureController::class, 'index']);
         Route::patch('/candidatures/{candidature}/status', [CandidatureController::class, 'updateStatus']);
+        Route::get('/fonctionnaires/next-matricule', [\App\Http\Controllers\FonctionnaireController::class, 'getNextMatricule']);
         Route::get('/fonctionnaires', [\App\Http\Controllers\FonctionnaireController::class, 'index']);
         Route::get('/fonctionnaires/{id}', [\App\Http\Controllers\FonctionnaireController::class, 'show']);
+        Route::post('/fonctionnaires', [\App\Http\Controllers\FonctionnaireController::class, 'store']);
+        Route::put('/fonctionnaires/{id}', [\App\Http\Controllers\FonctionnaireController::class, 'update']);
+        Route::delete('/fonctionnaires/{id}', [\App\Http\Controllers\FonctionnaireController::class, 'destroy']);
         
         // Leaves and Payroll
         Route::get('/leaves', [\App\Http\Controllers\LeaveRequestController::class, 'index']);
         Route::patch('/leaves/{id}/status', [\App\Http\Controllers\LeaveRequestController::class, 'updateStatus']);
         Route::get('/payrolls', [\App\Http\Controllers\PayrollController::class, 'index']);
         Route::post('/payrolls', [\App\Http\Controllers\PayrollController::class, 'store']);
+
+        // Administrative Acts
+        Route::get('/administrative-acts', [AdministrativeActController::class, 'index']);
+        Route::post('/administrative-acts/{act}/install', [AdministrativeActController::class, 'install']);
+        Route::post('/administrative-acts', [AdministrativeActController::class, 'store']);
+        Route::get('/administrative-acts/{act}', [AdministrativeActController::class, 'show']);
+        Route::put('/administrative-acts/{act}', [AdministrativeActController::class, 'update']);
+        Route::get('/administrative-acts/{act}/pdf', [AdministrativeActController::class, 'generatePdf']);
     });
 });

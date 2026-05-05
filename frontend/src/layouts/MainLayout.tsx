@@ -7,237 +7,117 @@ import {
   CalendarDays, CalendarCheck, FileText, FilePlus,
   Bell, BarChart3, PieChart, Menu, ChevronDown,
   PawPrint, Activity, Syringe, AlertTriangle, User as UserIcon, LogOut,
-  ClipboardList
+  ClipboardList, Settings as SettingsIcon, Globe, ChevronLeft,
+  LayoutDashboard, UserCircle, Search, Layers, FileSignature
 } from 'lucide-react';
 import { useAuthStore } from '../lib/auth';
+import { useLang } from '../context/LangContext';
 
 const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-
-  useEffect(() => {
-    document.documentElement.dir = 'rtl';
-    document.documentElement.lang = 'ar';
-    return () => {
-      document.documentElement.dir = 'ltr';
-      document.documentElement.lang = 'fr';
-    };
-  }, []);
+  const { lang, setLang, t } = useLang();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  const rhMenu = [
+  const toggleLang = () => {
+    setLang(lang === 'ar' ? 'fr' : 'ar');
+  };
+
+  // Modern Sidebar Structure - Categorized for Enterprise UX
+  const navigation = [
     {
-      title: '',
+      group: t('overview') || 'نظرة عامة',
       items: [
-        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
+        { title: t('dashboard'), icon: <LayoutDashboard size={20} />, path: '/dashboard' }
       ]
     },
     {
-      title: 'إدارة الموظفين',
+      group: t('talentManagement') || 'إدارة المواهب',
       items: [
-        { title: 'الموظفون', icon: <Users size={20} />, path: '/rh/employees' },
-        { title: 'إضافة موظف جديد', icon: <UserPlus size={20} />, path: '/rh/employees/add' },
-        { title: 'الأدوار والصلاحيات', icon: <Shield size={20} />, path: '/rh/roles' },
-        { title: 'الهيكل التنظيمي', icon: <Network size={20} />, path: '/rh/organigramme' },
+        { title: t('employees'), icon: <Users size={20} />, path: '/rh/employees' },
+        { title: t('addEmployee'), icon: <UserPlus size={20} />, path: '/rh/employees/add' },
+        { title: t('recruitment'), icon: <Briefcase size={20} />, path: '/rh/recrutement' },
+        { title: t('organigramme'), icon: <Layers size={20} />, path: '/rh/organigramme' },
       ]
     },
     {
-      title: 'الحالة الإدارية',
+      group: t('administrativeActs') || 'الإجراءات الإدارية',
       items: [
-        { title: 'الدرجات والسلم', icon: <List size={20} />, path: '/rh/grades' },
-        { title: 'الوضعيات الإدارية', icon: <Briefcase size={20} />, path: '/rh/admin-status' },
-        { title: 'الترقيات والتنقلات', icon: <TrendingUp size={20} />, path: '/rh/promotions' },
+        { title: t('administrativeActs') || 'القرارات الإدارية', icon: <FileSignature size={20} />, path: '/rh/acts' },
+        { title: t('promotions'), icon: <TrendingUp size={20} />, path: '/rh/promotions' },
+        { title: t('careerPath'), icon: <Route size={20} />, path: '/rh/career-path' },
+        { title: t('rolesPermissions'), icon: <Shield size={20} />, path: '/rh/roles' },
       ]
     },
     {
-      title: 'إدارة الأداء',
+      group: t('intelReports') || 'الذكاء والتقارير',
       items: [
-        { title: 'تقييم الأداء', icon: <Star size={20} />, path: '/rh/performance' },
-        { title: 'تاريخ التقييمات', icon: <History size={20} />, path: '/rh/eval-history' },
-        { title: 'المسار المهني', icon: <Route size={20} />, path: '/rh/career-path' },
+        { title: t('hrReports'), icon: <BarChart3 size={20} />, path: '/rh/reports' },
+        { title: t('statistics'), icon: <PieChart size={20} />, path: '/rh/statistics' },
       ]
     },
     {
-      title: 'التعويضات والأجور',
+      group: t('operations') || 'العمليات',
       items: [
-        { title: 'الأجور', icon: <DollarSign size={20} />, path: '/rh/salaries' },
-        { title: 'التعويضات', icon: <Gift size={20} />, path: '/rh/bonuses' },
-        { title: 'سجل الأداءات', icon: <ScrollText size={20} />, path: '/rh/payment-history' },
-      ]
-    },
-    {
-      title: 'إدارة العطل',
-      items: [
-        { title: 'طلبات العطل', icon: <CalendarDays size={20} />, path: '/rh/leave-requests' },
-        { title: 'رصيد العطل', icon: <CalendarCheck size={20} />, path: '/rh/leave-balance' },
-        { title: 'تقويم العطل', icon: <Calendar size={20} />, path: '/rh/leave-calendar' },
-      ]
-    },
-    {
-      title: 'الوثائق والإشعارات',
-      items: [
-        { title: 'الوثائق الإدارية', icon: <FileText size={20} />, path: '/rh/documents' },
-        { title: 'إنشاء وثيقة', icon: <FilePlus size={20} />, path: '/rh/documents/create' },
-        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/rh/notifications' },
-      ]
-    },
-    {
-      title: 'التقارير والإحصائيات',
-      items: [
-        { title: 'تقارير الموارد البشرية', icon: <BarChart3 size={20} />, path: '/rh/reports' },
-        { title: 'الإحصائيات', icon: <PieChart size={20} />, path: '/rh/statistics' },
+        { title: t('documents'), icon: <FileText size={20} />, path: '/rh/documents' },
+        { title: t('notifications'), icon: <Bell size={20} />, path: '/rh/notifications' },
+        { title: t('settings'), icon: <SettingsIcon size={20} />, path: '/parametres' },
       ]
     }
   ];
-
-  const vetMenu = [
-    {
-      title: '',
-      items: [
-        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
-      ]
-    },
-    {
-      title: 'الصحة الحيوانية',
-      items: [
-        { title: 'الحيوانات', icon: <PawPrint size={20} />, path: '/veterinaire/animals' },
-        { title: 'الحالات الصحية', icon: <Activity size={20} />, path: '/veterinaire/health' },
-        { title: 'التلقيحات', icon: <Syringe size={20} />, path: '/veterinaire/vaccinations' },
-        { title: 'الشهادات البيطرية', icon: <FilePlus size={20} />, path: '/veterinaire/certificates' },
-        { title: 'الأوبئة والأمراض', icon: <AlertTriangle size={20} />, path: '/veterinaire/epidemics' },
-        { title: 'التقارير البيطرية', icon: <BarChart3 size={20} />, path: '/veterinaire/reports' },
-      ]
-    },
-    {
-      title: 'الفضاء الشخصي',
-      items: [
-        { title: 'ملفي الشخصي', icon: <UserIcon size={20} />, path: '/veterinaire/profile' },
-        { title: 'حالتي الإدارية', icon: <Briefcase size={20} />, path: '/veterinaire/admin-status' },
-        { title: 'الأجر والتعويضات', icon: <DollarSign size={20} />, path: '/veterinaire/salary' },
-        { title: 'التقييمات', icon: <Star size={20} />, path: '/veterinaire/evaluations' },
-        { title: 'الترقيات', icon: <TrendingUp size={20} />, path: '/veterinaire/promotions' },
-        { title: 'العطل والغيابات', icon: <CalendarDays size={20} />, path: '/veterinaire/leaves' },
-        { title: 'الوثائق', icon: <FileText size={20} />, path: '/veterinaire/documents' },
-        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/veterinaire/notifications' },
-      ]
-    }
-  ];
-
-  const medicalMenu = [
-    {
-      title: '',
-      items: [
-        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
-      ]
-    },
-    {
-      title: 'الملف الطبي',
-      items: [
-        { title: 'المرضى والملفات الطبية', icon: <Users size={20} />, path: '/medical/patients' },
-        { title: 'المواعيد', icon: <Calendar size={20} />, path: '/medical/appointments' },
-        { title: 'التشخيصات والملاحظات', icon: <ClipboardList size={20} />, path: '/medical/diagnosis' },
-        { title: 'الشواهد الطبية', icon: <FileText size={20} />, path: '/medical/certificates' },
-        { title: 'متابعة الحالات', icon: <Activity size={20} />, path: '/medical/follow-up' },
-      ]
-    },
-    {
-      title: 'الفضاء الشخصي',
-      items: [
-        { title: 'ملفي الشخصي', icon: <UserIcon size={20} />, path: '/medical/profile' },
-        { title: 'الحالة الإدارية', icon: <Briefcase size={20} />, path: '/medical/admin-status' },
-        { title: 'الأجر والتعويضات', icon: <DollarSign size={20} />, path: '/medical/salary' },
-        { title: 'التقييمات', icon: <Star size={20} />, path: '/medical/evaluations' },
-        { title: 'الترقيات', icon: <TrendingUp size={20} />, path: '/medical/promotions' },
-        { title: 'العطل والغيابات', icon: <CalendarDays size={20} />, path: '/medical/leaves' },
-        { title: 'الوثائق', icon: <FileText size={20} />, path: '/medical/documents' },
-        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/medical/notifications' },
-      ]
-    }
-  ];
-
-  const nurseMenu = [
-    {
-      title: '',
-      items: [
-        { title: 'الرئيسية', icon: <Home size={20} />, path: '/dashboard' }
-      ]
-    },
-    {
-      title: 'الملف الطبي',
-      items: [
-        { title: 'المرضى', icon: <Users size={20} />, path: '/nurse/patients' },
-        { title: 'متابعة الحالات', icon: <Activity size={20} />, path: '/nurse/follow-up' },
-        { title: 'العلاجات المقدمة', icon: <Syringe size={20} />, path: '/nurse/treatments' },
-        { title: 'المؤشرات الصحية', icon: <Activity size={20} />, path: '/nurse/vitals' },
-        { title: 'التقارير الصحية', icon: <FileText size={20} />, path: '/nurse/reports' },
-        { title: 'المواعيد', icon: <Calendar size={20} />, path: '/nurse/appointments' },
-      ]
-    },
-    {
-      title: 'الفضاء الشخصي',
-      items: [
-        { title: 'ملفي الشخصي', icon: <UserIcon size={20} />, path: '/nurse/profile' },
-        { title: 'الحالة الإدارية', icon: <Briefcase size={20} />, path: '/nurse/admin-status' },
-        { title: 'الأجر والتعويضات', icon: <DollarSign size={20} />, path: '/nurse/salary' },
-        { title: 'التقييمات', icon: <Star size={20} />, path: '/nurse/evaluations' },
-        { title: 'الترقيات', icon: <TrendingUp size={20} />, path: '/nurse/promotions' },
-        { title: 'العطل', icon: <CalendarDays size={20} />, path: '/nurse/leaves' },
-        { title: 'الوثائق', icon: <FileText size={20} />, path: '/nurse/documents' },
-        { title: 'الإشعارات', icon: <Bell size={20} />, path: '/nurse/notifications' },
-      ]
-    }
-  ];
-
-  const menuSections =
-    user?.role === 'nurse' ? nurseMenu :
-      user?.role === 'veterinarian' ? vetMenu :
-        user?.role === 'doctor' ? medicalMenu :
-          rhMenu;
 
   return (
-    <div className="flex h-screen bg-slate-50 text-gray-800 font-sans overflow-hidden" dir="rtl">
+    <div className={`flex h-screen bg-[#F8FAFC] text-gray-800 font-sans overflow-hidden ${lang === 'ar' ? 'font-arabic' : ''}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
 
-      {/* ── Sidebar ─────────────────────────────── */}
-      <aside className={`bg-white border-l border-gray-200 flex flex-col transition-all duration-300 z-30 flex-shrink-0 shadow-sm ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
+      {/* --- SIDEBAR --- */}
+      <aside className={`bg-[#003366] text-white flex flex-col transition-all duration-700 z-30 flex-shrink-0 shadow-2xl relative overflow-hidden ${sidebarOpen ? 'w-80' : 'w-0 opacity-0'}`}>
+        
+        {/* Subtle Moroccan Pattern in Sidebar Background */}
+        <div className="absolute inset-0 pattern-moroccan opacity-[0.03] pointer-events-none"></div>
 
-        {/* Brand */}
-        <div className="bg-[#0d5e3f] h-20 flex items-center px-4 gap-3 text-white flex-shrink-0">
-          <div className="w-10 h-12 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded flex items-center justify-center font-bold text-sm shadow-md">
-            شعار
+        {/* Brand Section */}
+        <div className="h-32 flex items-center px-8 gap-5 border-b border-white/5 relative z-10">
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-2xl p-1.5 transform hover:rotate-6 transition-transform">
+            <img src="/logo_commune.jpg" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h1 className="font-extrabold text-sm leading-tight">الجماعة الترابية</h1>
-            <h2 className="font-bold text-sm leading-tight text-green-100">مدينة المستقبل</h2>
+            <h1 className="font-black text-xl leading-tight tracking-tight">{t('communeName')}</h1>
+            <h2 className="font-black text-sm leading-tight text-[#C5A059] opacity-90">{t('communeCity')}</h2>
           </div>
         </div>
 
-        {/* Menu */}
-        <div className="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">
-          {menuSections.map((section, idx) => (
-            <div key={idx} className="mb-4">
-              {section.title && (
-                <h3 className="text-emerald-700 text-[11px] font-extrabold mb-2 px-4">{section.title}</h3>
-              )}
-              <ul className="space-y-1">
-                {section.items.map((item, i) => {
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto py-10 px-6 custom-scrollbar space-y-10 relative z-10">
+          {navigation.map((group, idx) => (
+            <div key={idx} className="space-y-4">
+              <h3 className={`text-[#C5A059] text-[10px] font-black uppercase tracking-[0.3em] px-4 opacity-40 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                 {group.group}
+              </h3>
+              <ul className="space-y-2">
+                {group.items.map((item, i) => {
                   const isActive = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
                   return (
                     <li key={i}>
                       <Link
                         to={item.path}
-                        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${isActive
-                          ? 'bg-emerald-50 text-emerald-700 border-r-4 border-emerald-600'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-700 border-r-4 border-transparent'
+                        className={`flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 group relative ${isActive
+                          ? 'bg-gradient-to-r from-white/10 to-white/5 text-white shadow-lg border border-white/10'
+                          : 'text-blue-100/40 hover:text-white hover:bg-white/5'
                           }`}
                       >
-                        <span className={`${isActive ? 'text-emerald-600' : 'text-gray-400'}`}>{item.icon}</span>
-                        {item.title}
+                        {isActive && (
+                          <div className={`absolute top-0 bottom-0 ${lang === 'ar' ? 'right-0' : 'left-0'} w-1.5 bg-[#C5A059] rounded-full shadow-[0_0_15px_#C5A059]`}></div>
+                        )}
+                        <span className={`transition-transform duration-300 ${isActive ? 'text-[#C5A059] scale-110' : 'group-hover:text-[#C5A059]'}`}>
+                          {item.icon}
+                        </span>
+                        <span className="relative z-10">{item.title}</span>
                       </Link>
                     </li>
                   )
@@ -246,73 +126,87 @@ const MainLayout = () => {
             </div>
           ))}
 
-          <div className="mt-8 pt-4 border-t border-gray-100">
+          <div className="mt-20 pt-8 border-t border-white/5">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+              className="flex items-center gap-4 px-6 py-5 w-full text-sm font-black text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-2xl transition-all"
             >
               <LogOut size={20} />
-              تسجيل الخروج
+              {t('logout')}
             </button>
           </div>
-        </div>
+        </nav>
       </aside>
 
-      {/* ── Main Area ───────────────────────────── */}
+      {/* --- MAIN CONTENT --- */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
 
-        {/* Topbar */}
-        <header className="h-20 bg-white border-b border-gray-200 px-8 flex items-center justify-between shadow-sm z-20 flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-500 hover:text-emerald-700">
+        {/* Premium Header */}
+        <header className="h-28 bg-white/80 backdrop-blur-2xl border-b border-gray-100 px-12 flex items-center justify-between z-20 flex-shrink-0">
+          <div className="flex items-center gap-8">
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)} 
+              className="p-4 bg-[#F8FAFC] text-slate-400 hover:text-[#003366] hover:bg-white hover:shadow-xl rounded-2xl transition-all border border-gray-50"
+            >
               <Menu size={24} />
             </button>
-            <div>
-              <h2 className="text-lg font-extrabold text-gray-800 flex items-center gap-2">
-                👋 مرحباً {user?.name || 'سعاد الإدريسي'}
+            <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+              <h2 className="text-2xl font-black text-[#003366] tracking-tight">
+                {t('welcome')}, <span className="text-[#006241]">{user?.name || 'سعاد الإدريسي'}</span>
               </h2>
-              <p className="text-sm text-gray-500 font-medium">
-                {user?.role === 'rh' ? 'موارد بشرية' : user?.role === 'doctor' ? 'طبيب عام' : user?.role === 'nurse' ? 'ممرضة' : 'طبيب بيطري'} - جماعة مدينة المستقبل
+              <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1">
+                 {t('lastLogin') || 'آخر تسجيل دخول'}: {new Date().toLocaleTimeString()} • {new Date().toLocaleDateString(lang === 'ar' ? 'ar-MA' : 'fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-2 text-gray-500 text-sm font-bold bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
-              <Calendar size={16} />
-              الأحد 19 ماي 2024
-              <ChevronDown size={14} className="ml-2" />
+          <div className="flex items-center gap-10">
+            {/* Executive Search */}
+            <div className="hidden xl:flex items-center bg-[#F8FAFC] border border-gray-100 rounded-2xl px-6 py-3 w-80 gap-3 group focus-within:border-[#C5A059] focus-within:bg-white focus-within:shadow-xl transition-all">
+              <Search size={18} className="text-slate-300 group-focus-within:text-[#C5A059]" />
+              <input type="text" placeholder={t('searchPlaceholder') || 'بحث سريع...'} className="bg-transparent border-none text-sm font-bold w-full focus:ring-0 placeholder:text-slate-300" />
             </div>
 
-            <button className="relative text-gray-500 hover:text-emerald-700 transition-colors">
-              <Bell size={22} />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">5</span>
-            </button>
+            {/* Language & Actions */}
+            <div className="flex items-center gap-6">
+              <button 
+                onClick={toggleLang}
+                className="flex items-center gap-3 text-[#003366] font-black text-[10px] uppercase tracking-widest bg-white px-6 py-3.5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all group"
+              >
+                <Globe size={16} className="text-[#C5A059] group-hover:rotate-180 transition-transform duration-700" />
+                {lang === 'ar' ? 'Français' : 'العربية'}
+              </button>
 
-            <div className="flex items-center gap-3 cursor-pointer group">
-              <div className="text-left hidden md:block">
-                <h3 className="text-sm font-bold text-gray-800 group-hover:text-emerald-700 transition-colors">{user?.name || 'سعاد الإدريسي'}</h3>
-                <p className="text-xs text-gray-500 font-medium">
-                  {user?.role === 'rh' ? 'مسؤولة الموارد البشرية' : user?.role === 'doctor' ? 'طبيب عام - مصلحة الصحة' : user?.role === 'nurse' ? 'ممرضة - مصلحة الصحة' : 'طبيب بيطري ممارس'}
-                </p>
+              <div className="flex items-center gap-6 border-l border-gray-100 pl-6">
+                <button className="relative text-slate-400 hover:text-[#006241] transition-colors p-3 hover:bg-emerald-50 rounded-2xl">
+                  <Bell size={24} />
+                  <span className="absolute top-2 right-2 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">3</span>
+                </button>
+
+                <div className="flex items-center gap-5 cursor-pointer group hover:bg-gray-50 p-2 rounded-2xl transition-all">
+                   <div className="relative">
+                      <img
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
+                        alt="Profile"
+                        className="w-14 h-14 rounded-2xl object-cover border-4 border-white shadow-2xl group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white shadow-sm"></div>
+                   </div>
+                   <div className={`hidden lg:block ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                      <h3 className="text-sm font-black text-[#003366] leading-none mb-1 group-hover:text-[#C5A059] transition-colors">{user?.name || 'سعاد الإدريسي'}</h3>
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Administrator</p>
+                   </div>
+                </div>
               </div>
-              <img
-                src={
-                  user?.role === 'doctor' ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" :
-                    user?.role === 'nurse' ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80" :
-                      user?.role === 'veterinarian' ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" :
-                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
-                }
-                alt="Profile"
-                className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-emerald-500 transition-colors"
-              />
             </div>
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-8 custom-scrollbar">
-          <Outlet />
+        {/* Dynamic Viewport */}
+        <main className="flex-1 overflow-y-auto bg-[#F8FAFC] p-12 custom-scrollbar animate-premium-in">
+          <div className="max-w-[1600px] mx-auto">
+             <Outlet />
+          </div>
         </main>
       </div>
     </div>

@@ -9,12 +9,12 @@ const PublicDocuments = () => {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">الوثائق الرسمية</h1>
           <div className="w-20 h-1 bg-yellow-500 rounded"></div>
         </div>
-        <div className="relative w-full md:w-80">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <div className="relative w-full md:w-96 group">
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors" size={20} />
           <input 
             type="text" 
             placeholder="ابحث عن وثيقة..." 
-            className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl outline-none focus:border-[#0d5e3f] bg-gray-50"
+            className="w-full pl-6 pr-12 py-4 border-2 border-gray-100 rounded-[1.25rem] outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-white transition-all shadow-sm font-bold text-sm"
           />
         </div>
       </div>

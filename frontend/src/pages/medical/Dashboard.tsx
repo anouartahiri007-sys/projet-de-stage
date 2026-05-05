@@ -7,53 +7,55 @@ import {
   ClipboardList, FilePlus
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLang } from '../../context/LangContext';
 
-const APPOINTMENTS = [
-  { id: 1, time: '09:30', date: '20 ماي 2024', title: 'فاطمة الزهراء الإدريسي', desc: 'استشارة عامة', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
-  { id: 2, time: '10:15', date: '20 ماي 2024', title: 'محمد أمين الناصري', desc: 'متابعة حالة', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80' },
-  { id: 3, time: '11:00', date: '20 ماي 2024', title: 'سعاد الحاجي', desc: 'ضغط الدم', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80' },
-  { id: 4, time: '12:00', date: '20 ماي 2024', title: 'رضوان الوهابي', desc: 'ألم في الظهر', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80' },
-  { id: 5, time: '12:45', date: '20 ماي 2024', title: 'نورة القاسمي', desc: 'استشارة عامة', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80' },
+const APPOINTMENTS = (t: any, lang: string) => [
+  { id: 1, time: '09:30', date: lang === 'ar' ? '20 ماي 2024' : '20 Mai 2024', title: lang === 'ar' ? 'فاطمة الزهراء الإدريسي' : 'Fatima-Zahra Idrissi', desc: lang === 'ar' ? 'استشارة عامة' : 'Consultation générale', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
+  { id: 2, time: '10:15', date: lang === 'ar' ? '20 ماي 2024' : '20 Mai 2024', title: lang === 'ar' ? 'محمد أمين الناصري' : 'Mohammed Amine Nassiri', desc: lang === 'ar' ? 'متابعة حالة' : 'Suivi de cas', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80' },
+  { id: 3, time: '11:00', date: lang === 'ar' ? '20 ماي 2024' : '20 Mai 2024', title: lang === 'ar' ? 'سعاد الحاجي' : 'Souad El Hajji', desc: lang === 'ar' ? 'ضغط الدم' : 'Tension artérielle', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80' },
+  { id: 4, time: '12:00', date: lang === 'ar' ? '20 ماي 2024' : '20 Mai 2024', title: lang === 'ar' ? 'رضوان الوهابي' : 'Redouane El Wahabi', desc: lang === 'ar' ? 'ألم في الظهر' : 'Douleur dorsale', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80' },
+  { id: 5, time: '12:45', date: lang === 'ar' ? '20 ماي 2024' : '20 Mai 2024', title: lang === 'ar' ? 'نورة القاسمي' : 'Nora El Kasmi', desc: lang === 'ar' ? 'استشارة عامة' : 'Consultation générale', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80' },
 ];
 
-const FOLLOW_UP = [
-  { id: 1, name: 'الحسين مرابط', desc: 'سكري نوع 2', time: 'آخر متابعة: 18 ماي 2024', status: 'عالية', color: 'bg-rose-50 text-rose-700 border-rose-100', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' },
-  { id: 2, name: 'خديجة بوعزة', desc: 'ارتفاع ضغط الدم', time: 'آخر متابعة: 17 ماي 2024', status: 'متوسطة', color: 'bg-amber-50 text-amber-700 border-amber-100', img: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&w=100&q=80' },
-  { id: 3, name: 'أحمد العلوي', desc: 'حساسية صدرية', time: 'آخر متابعة: 15 ماي 2024', status: 'منخفضة', color: 'bg-emerald-50 text-emerald-700 border-emerald-100', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80' },
-  { id: 4, name: 'سمية أيت الطالب', desc: 'فقر دم', time: 'آخر متابعة: 15 ماي 2024', status: 'متوسطة', color: 'bg-amber-50 text-amber-700 border-amber-100', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
+const FOLLOW_UP = (t: any, lang: string) => [
+  { id: 1, name: lang === 'ar' ? 'الحسين مرابط' : 'Lahcen Mourabit', desc: lang === 'ar' ? 'سكري نوع 2' : 'Diabète Type 2', time: lang === 'ar' ? 'آخر متابعة: 18 ماي 2024' : 'Dernier suivi: 18 Mai 2024', status: t('high'), color: 'bg-rose-50 text-rose-700 border-rose-100', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' },
+  { id: 2, name: lang === 'ar' ? 'خديجة بوعزة' : 'Khadija Bouazza', desc: lang === 'ar' ? 'ارتفاع ضغط الدم' : 'Hypertension', time: lang === 'ar' ? 'آخر متابعة: 17 ماي 2024' : 'Dernier suivi: 17 Mai 2024', status: t('medium'), color: 'bg-amber-50 text-amber-700 border-amber-100', img: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&w=100&q=80' },
+  { id: 3, name: lang === 'ar' ? 'أحمد العلوي' : 'Ahmed Alaoui', desc: lang === 'ar' ? 'حساسية صدرية' : 'Asthme', time: lang === 'ar' ? 'آخر متابعة: 15 ماي 2024' : 'Dernier suivi: 15 Mai 2024', status: t('low'), color: 'bg-emerald-50 text-emerald-700 border-emerald-100', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80' },
+  { id: 4, name: lang === 'ar' ? 'سمية أيت الطالب' : 'Soumia Ait Taleb', desc: lang === 'ar' ? 'فقر دم' : 'Anémie', time: lang === 'ar' ? 'آخر متابعة: 15 ماي 2024' : 'Dernier suivi: 15 Mai 2024', status: t('medium'), color: 'bg-amber-50 text-amber-700 border-amber-100', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
 ];
 
-const RECENT_DIAGNOSIS = [
-  { id: 1, name: 'الحسين مرابط - سكري نوع 2', desc: 'تم تعديل العلاج، متابعة بعد أسبوعين', date: '18 ماي 2024' },
-  { id: 2, name: 'خديجة بوعزة - ارتفاع ضغط الدم', desc: 'تحسن ملحوظ، الاستمرار على العلاج الحالي', date: '17 ماي 2024' },
-  { id: 3, name: 'أحمد العلوي - حساسية صدرية', desc: 'وصف دواء مضاد للحساسية', date: '15 ماي 2024' },
+const RECENT_DIAGNOSIS = (t: any, lang: string) => [
+  { id: 1, name: lang === 'ar' ? 'الحسين مرابط - سكري نوع 2' : 'Lahcen Mourabit - Diabète Type 2', desc: lang === 'ar' ? 'تم تعديل العلاج، متابعة بعد أسبوعين' : 'Traitement ajusté, suivi dans 2 semaines', date: lang === 'ar' ? '18 ماي 2024' : '18 Mai 2024' },
+  { id: 2, name: lang === 'ar' ? 'خديجة بوعزة - ارتفاع ضغط الدم' : 'Khadija Bouazza - Hypertension', desc: lang === 'ar' ? 'تحسن ملحوظ، الاستمرار على العلاج الحالي' : 'Amélioration notable, continuer le traitement actuel', date: lang === 'ar' ? '17 ماي 2024' : '17 Mai 2024' },
+  { id: 3, name: lang === 'ar' ? 'أحمد العلوي - حساسية صدرية' : 'Ahmed Alaoui - Asthme', desc: lang === 'ar' ? 'وصف دواء مضاد للحساسية' : 'Prescription d\'un antihistaminique', date: lang === 'ar' ? '15 ماي 2024' : '15 Mai 2024' },
 ];
 
 const MedicalDashboard = () => {
   const navigate = useNavigate();
+  const { t, lang } = useLang();
 
   const stats = [
-    { label: 'إجمالي المرضى', value: '1,248', trend: '+2 هذا الشهر', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600', icon: <Users size={20} /> },
-    { label: 'المواعيد اليوم', value: '8', trend: '8 قادمة', bgColor: 'bg-blue-50', textColor: 'text-blue-600', icon: <Calendar size={20} /> },
-    { label: 'الحالات قيد المتابعة', value: '24', trend: '+5 جديدة', bgColor: 'bg-orange-50', textColor: 'text-orange-600', icon: <ClipboardList size={20} /> },
-    { label: 'الشواهد الطبية', value: '15', trend: 'هذا الشهر', bgColor: 'bg-teal-50', textColor: 'text-teal-600', icon: <FileText size={20} /> },
+    { label: t('totalPatients'), value: '1,248', trend: lang === 'ar' ? '+2 هذا الشهر' : '+2 ce mois', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600', icon: <Users size={20} /> },
+    { label: t('appointmentsToday'), value: '8', trend: lang === 'ar' ? '8 قادمة' : '8 à venir', bgColor: 'bg-blue-50', textColor: 'text-blue-600', icon: <Calendar size={20} /> },
+    { label: t('followUpCases'), value: '24', trend: lang === 'ar' ? '+5 جديدة' : '+5 nouveaux', bgColor: 'bg-orange-50', textColor: 'text-orange-600', icon: <ClipboardList size={20} /> },
+    { label: t('medicalCertificates'), value: '15', trend: lang === 'ar' ? 'هذا الشهر' : 'Ce mois', bgColor: 'bg-teal-50', textColor: 'text-teal-600', icon: <FileText size={20} /> },
   ];
 
   const quickActions = [
-    { icon: <FilePlus size={22} />, label: 'ملف طبي جديد', onClick: () => navigate('/medical/patients/add') },
-    { icon: <Stethoscope size={22} />, label: 'تشخيص جديد', onClick: () => navigate('/medical/diagnosis/add') },
-    { icon: <FileText size={22} />, label: 'شهادة طبية', onClick: () => navigate('/medical/certificates/issue') },
-    { icon: <Calendar size={22} />, label: 'موعد جديد', onClick: () => navigate('/medical/appointments') },
+    { icon: <FilePlus size={22} />, label: t('newMedicalFile'), onClick: () => navigate('/medical/patients/add') },
+    { icon: <Stethoscope size={22} />, label: t('newDiagnosis'), onClick: () => navigate('/medical/diagnosis/add') },
+    { icon: <FileText size={22} />, label: t('medicalCertificate'), onClick: () => navigate('/medical/certificates/issue') },
+    { icon: <Calendar size={22} />, label: t('newAppointment'), onClick: () => navigate('/medical/appointments') },
   ];
 
   return (
-    <div className="animate-slide-up space-y-8 pb-12">
+    <div className={`animate-slide-up space-y-8 pb-12 ${lang === 'ar' ? 'font-arabic' : ''}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
 
       {/* --- STATS GRID --- */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="gov-card p-6 flex flex-col group hover:scale-[1.03] transition-transform">
-            <div className="flex items-center justify-between mb-4">
+          <div key={i} className={`gov-card p-6 flex flex-col group hover:scale-[1.03] transition-transform ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+            <div className={`flex items-center justify-between mb-4 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
               <div className={`p-4 rounded-2xl ${stat.bgColor} ${stat.textColor} group-hover:rotate-12 transition-transform`}>
                 {stat.icon}
               </div>
@@ -71,16 +73,16 @@ const MedicalDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* APPOINTMENTS */}
-        <section className="lg:col-span-4 gov-card overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-gray-50/30">
+        <section className={`lg:col-span-4 gov-card overflow-hidden ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+          <div className={`p-6 border-b border-slate-100 flex items-center justify-between bg-gray-50/30 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
             <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
               <Calendar size={20} className="text-emerald-600" />
-              المواعيد القادمة
+              {t('upcomingAppointments')}
             </h2>
           </div>
           <div className="divide-y divide-slate-50">
-            {APPOINTMENTS.map(item => (
-              <div key={item.id} className="p-4 hover:bg-slate-50/50 transition-colors flex items-center gap-4">
+            {APPOINTMENTS(t, lang).map(item => (
+              <div key={item.id} className={`p-4 hover:bg-slate-50/50 transition-colors flex items-center gap-4 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                 <div className="text-center min-w-[70px]">
                   <p className="text-sm font-black text-emerald-700">{item.time}</p>
                   <p className="text-[9px] text-gray-400 font-bold">{item.date.split(' ').slice(1).join(' ')}</p>
@@ -94,22 +96,22 @@ const MedicalDashboard = () => {
             ))}
           </div>
           <button className="w-full py-3 text-xs font-bold text-gray-500 hover:bg-gray-50 border-t border-gray-50">
-            عرض جميع المواعيد
+            {t('viewAllAppointments')}
           </button>
         </section>
 
         {/* FOLLOW UP CASES */}
-        <section className="lg:col-span-4 gov-card overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-gray-50/30">
+        <section className={`lg:col-span-4 gov-card overflow-hidden ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+          <div className={`p-6 border-b border-slate-100 flex items-center justify-between bg-gray-50/30 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
             <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
               <Activity size={20} className="text-emerald-600" />
-              الحالات قيد المتابعة
+              {t('followUpCases')}
             </h2>
           </div>
           <div className="divide-y divide-slate-50">
-            {FOLLOW_UP.map(item => (
-              <div key={item.id} className="p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            {FOLLOW_UP(t, lang).map(item => (
+              <div key={item.id} className={`p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
+                <div className={`flex items-center gap-4 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                   <span className={`px-2 py-1 rounded text-[10px] font-black border ${item.color}`}>
                     {item.status}
                   </span>
@@ -124,16 +126,16 @@ const MedicalDashboard = () => {
             ))}
           </div>
           <button className="w-full py-3 text-xs font-bold text-gray-500 hover:bg-gray-50 border-t border-gray-50">
-            عرض جميع الحالات
+            {t('viewAllCases')}
           </button>
         </section>
 
         {/* QUICK ACTIONS & NOTIFICATIONS */}
         <section className="lg:col-span-4 space-y-8">
           <div className="gov-card p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
+            <h2 className={`text-lg font-bold text-gray-800 mb-5 flex items-center gap-2 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
               <TrendingUp size={20} className="text-emerald-600" />
-              إجراءات سريعة
+              {t('quickAccess')}
             </h2>
             <div className="grid grid-cols-2 gap-4">
               {quickActions.map((action, i) => (
@@ -151,24 +153,24 @@ const MedicalDashboard = () => {
                 </button>
               ))}
             </div>
-            <button className="w-full mt-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl text-xs font-bold text-gray-600 flex items-center justify-center gap-2 transition-all">
+            <button className={`w-full mt-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl text-xs font-bold text-gray-600 flex items-center justify-center gap-2 transition-all`}>
               <Search size={16} />
-              بحث عن مريض
+              {t('searchPatient')}
             </button>
           </div>
 
           <div className="gov-card p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
+            <h2 className={`text-lg font-bold text-gray-800 mb-5 flex items-center gap-2 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
               <Bell size={20} className="text-emerald-600" />
-              آخر الإشعارات
+              {t('recentNotifications')}
             </h2>
             <div className="space-y-4">
               {[
-                { title: 'تم تأكيد موعد جديد للمريضة فاطمة الزهراء الإدريسي', time: 'منذ 10 دقائق', type: 'success' },
-                { title: 'تم إصدار شهادة طبية للمريض محمد أمين الناصري', time: 'منذ 1 ساعة', type: 'success' },
-                { title: 'نتيجة تحليل مخبري متوفرة للمريض سعاد الحاجي', time: 'منذ 3 ساعات', type: 'warning' },
+                { title: lang === 'ar' ? 'تم تأكيد موعد جديد للمريضة فاطمة الزهراء الإدريسي' : 'Nouveau rendez-vous confirmé pour Fatima-Zahra Idrissi', time: lang === 'ar' ? 'منذ 10 دقائق' : 'Il y a 10 min', type: 'success' },
+                { title: lang === 'ar' ? 'تم إصدار شهادة طبية للمريض محمد أمين الناصري' : 'Certificat médical délivré pour Mohammed Amine Nassiri', time: lang === 'ar' ? 'منذ 1 ساعة' : 'Il y a 1 h', type: 'success' },
+                { title: lang === 'ar' ? 'نتيجة تحليل مخبري متوفرة للمريض سعاد الحاجي' : 'Résultat d\'analyse disponible pour Souad El Hajji', time: lang === 'ar' ? 'منذ 3 ساعات' : 'Il y a 3 h', type: 'warning' },
               ].map((item, i) => (
-                <div key={i} className="flex gap-3 items-start">
+                <div key={i} className={`flex gap-3 items-start ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${item.type === 'success' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
                   <div>
                     <p className="text-xs font-bold text-gray-700 leading-relaxed">{item.title}</p>
@@ -178,22 +180,22 @@ const MedicalDashboard = () => {
               ))}
             </div>
             <button className="w-full mt-6 py-2.5 text-xs font-bold text-emerald-700 border border-emerald-100 rounded-lg hover:bg-emerald-50 transition-all">
-              عرض جميع الإشعارات
+              {t('viewAllNotifications')}
             </button>
           </div>
         </section>
 
         {/* RECENT DIAGNOSIS - FULL WIDTH AT BOTTOM */}
-        <section className="lg:col-span-12 gov-card overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-gray-50/30">
+        <section className={`lg:col-span-12 gov-card overflow-hidden ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+          <div className={`p-6 border-b border-slate-100 flex items-center justify-between bg-gray-50/30 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
             <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
               <ClipboardList size={20} className="text-emerald-600" />
-              آخر التشخيصات والملاحظات
+              {t('recentDiagnosisNotes')}
             </h2>
           </div>
           <div className="divide-y divide-slate-50">
-            {RECENT_DIAGNOSIS.map(item => (
-              <div key={item.id} className="p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between">
+            {RECENT_DIAGNOSIS(t, lang).map(item => (
+              <div key={item.id} className={`p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                 <div>
                   <h3 className="font-bold text-sm text-gray-800">{item.name}</h3>
                   <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
@@ -208,7 +210,7 @@ const MedicalDashboard = () => {
             ))}
           </div>
           <button className="w-full py-3 text-xs font-bold text-emerald-700 hover:bg-emerald-50 border-t border-gray-50 transition-all uppercase tracking-widest">
-            عرض جميع التشخيصات
+            {t('viewAllDiagnosis')}
           </button>
         </section>
       </div>

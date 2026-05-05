@@ -7,24 +7,35 @@ import {
   User as Facebook, 
   Camera as Instagram, 
   Play as Youtube, 
+  Share2 as Twitter,
   Phone, 
-  Globe
+  Globe,
+  Bell,
+  Mail,
+  User
 } from 'lucide-react';
+import { useLang } from '../context/LangContext';
 
 const PublicLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { lang, setLang, t } = useLang();
   const location = useLocation();
   const navigate = useNavigate();
 
+  const toggleLang = () => {
+    const newLang = lang === 'ar' ? 'fr' : 'ar';
+    setLang(newLang);
+  };
+
   const navLinks = [
-    { title: 'الرئيسية', path: '/' },
-    { title: 'عن الجماعة', path: '/about' },
-    { title: 'أخبار الجماعة', path: '/news' },
-    { title: 'الخدمات الرقمية', path: '/services' },
-    { title: 'مشاريع وأنشطة', path: '/projects' },
-    { title: 'الإعلانات', path: '/announcements' },
-    { title: 'الوثائق', path: '/documents' },
-    { title: 'اتصل بنا', path: '/contact' },
+    { title: t('home'), path: '/' },
+    { title: t('about'), path: '/about' },
+    { title: t('news'), path: '/news' },
+    { title: t('services'), path: '/services' },
+    { title: t('projects'), path: '/projects' },
+    { title: t('announcements'), path: '/announcements' },
+    { title: t('documents'), path: '/documents' },
+    { title: t('contact'), path: '/contact' },
   ];
 
   useEffect(() => {
@@ -33,57 +44,51 @@ const PublicLayout = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans" dir="rtl">
+    <div className={`min-h-screen bg-white flex flex-col font-sans`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       
-      {/* Top Bar */}
-      <div className="bg-[#0d5e3f] text-white py-2 px-4 md:px-8 flex justify-between items-center text-sm">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Phone size={14} />
-            <span dir="ltr">+212 5 37 23 45 67</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Facebook size={16} className="cursor-pointer hover:text-yellow-400 transition-colors" />
-            <Instagram size={16} className="cursor-pointer hover:text-yellow-400 transition-colors" />
-            <Youtube size={16} className="cursor-pointer hover:text-yellow-400 transition-colors" />
-          </div>
-        </div>
+      {/* Top Bar - Matching Image */}
+      <div className="bg-white border-b border-gray-100 py-2 px-4 md:px-8 flex justify-between items-center text-sm text-[#003366]">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 cursor-pointer hover:text-yellow-400 transition-colors">
-            <Globe size={14} />
-            <span>Français</span>
-          </div>
-          <Link to="/login" className="bg-yellow-500 hover:bg-yellow-600 text-[#0d5e3f] px-4 py-1 rounded font-bold transition-colors">
-            فضاء الموظف
+          <Link to="/login" className="bg-[#003366] text-white px-4 py-1.5 rounded-md font-bold transition-all hover:bg-[#004b93]">
+            {t('employeePortal')}
           </Link>
+          <button 
+            onClick={toggleLang} 
+            className="flex items-center gap-2 cursor-pointer hover:text-[#004b93] transition-colors border border-gray-200 px-3 py-1 rounded-md bg-gray-50"
+          >
+            <Globe size={14} />
+            <span className="font-bold">{t('langSwitch')}</span>
+          </button>
+        </div>
+        
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-4 border-l border-gray-200 pl-4 h-6">
+            <button className="text-[#003366] hover:text-[#004b93] transition-colors"><Search size={18} /></button>
+            <button className="text-[#003366] hover:text-[#004b93] transition-colors"><Bell size={18} /></button>
+            <button className="text-[#003366] hover:text-[#004b93] transition-colors"><Mail size={18} /></button>
+            <button className="text-[#003366] hover:text-[#004b93] transition-colors"><User size={18} /></button>
+          </div>
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <Phone size={16} className="text-[#004b93]" />
+            <span dir="ltr">+212 5 39 91 23 45</span>
+          </div>
         </div>
       </div>
 
       {/* Header / Navbar */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white shadow-sm">
         <nav className="max-w-[1400px] mx-auto px-4 md:px-8 h-20 flex justify-between items-center">
           
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center gap-3">
-             <div className="w-12 h-14 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded flex items-center justify-center font-bold text-white text-xs shadow-md">
-                شعار
-             </div>
-             <div className="hidden sm:block text-right">
-                <h1 className="text-[#0d5e3f] font-extrabold text-lg leading-tight uppercase">الجماعة الترابية</h1>
-                <h2 className="text-gray-500 font-bold text-sm leading-tight tracking-wider">مدينة المستقبل</h2>
-             </div>
-          </Link>
-
-          {/* Desktop Nav */}
-          <ul className="hidden lg:flex items-center gap-1">
+          {/* Desktop Nav - Left in RTL */}
+          <ul className="hidden lg:flex items-center gap-2">
             {navLinks.map((link) => (
               <li key={link.path}>
                 <Link 
                   to={link.path}
-                  className={`px-4 py-2 rounded-md font-bold transition-all text-sm ${
+                  className={`px-4 py-2 font-bold transition-all text-[15px] border-b-2 ${
                     location.pathname === link.path 
-                    ? 'text-[#0d5e3f] bg-emerald-50 shadow-sm' 
-                    : 'text-gray-600 hover:text-[#0d5e3f] hover:bg-gray-50'
+                    ? 'text-[#004b93] border-[#004b93]' 
+                    : 'text-gray-600 border-transparent hover:text-[#004b93]'
                   }`}
                 >
                   {link.title}
@@ -92,21 +97,24 @@ const PublicLayout = () => {
             ))}
           </ul>
 
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-             <button 
-               onClick={() => navigate('/?search=focus')}
-               className="p-2 text-gray-500 hover:text-[#0d5e3f] transition-colors"
-             >
-               <Search size={22} />
-             </button>
-             <button 
-               className="lg:hidden p-2 text-gray-500"
-               onClick={() => setIsMenuOpen(!isMenuOpen)}
-             >
-               {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-             </button>
-          </div>
+          {/* Logo Section - Right in RTL */}
+          <Link to="/" className="flex items-center gap-4">
+             <div className={`${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                <h1 className="text-[#004b93] font-black text-xl leading-tight">{t('communeName')}</h1>
+                <h2 className="text-gray-500 font-bold text-sm leading-tight">{t('communeCity')}</h2>
+             </div>
+             <div className="w-14 h-14 flex items-center justify-center overflow-hidden">
+                <img src="/logo_commune.jpg" alt="Logo Larache" className="w-full h-full object-contain" />
+             </div>
+          </Link>
+
+          {/* Mobile Toggle */}
+          <button 
+            className="lg:hidden p-2 text-[#003366]"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
         </nav>
 
         {/* Mobile Menu */}
@@ -118,18 +126,13 @@ const PublicLayout = () => {
                   <Link 
                     to={link.path}
                     className={`block py-2 font-bold ${
-                      location.pathname === link.path ? 'text-[#0d5e3f]' : 'text-gray-600'
+                      location.pathname === link.path ? 'text-[#004b93]' : 'text-gray-600'
                     }`}
                   >
                     {link.title}
                   </Link>
                 </li>
               ))}
-              <li className="pt-4 border-t border-gray-50">
-                 <Link to="/login" className="block w-full bg-[#0d5e3f] text-white text-center py-3 rounded-lg font-bold">
-                    فضاء الموظف
-                 </Link>
-              </li>
             </ul>
           </div>
         )}
@@ -140,72 +143,78 @@ const PublicLayout = () => {
         <Outlet />
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#0d5e3f] text-white pt-16 pb-8 px-4 md:px-8">
+      {/* Footer - Matching Image */}
+      <footer className="bg-[#002d5a] text-white pt-16 pb-6 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
             
             <div className="md:col-span-1">
-               <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-12 bg-white/10 rounded flex items-center justify-center font-bold text-white text-[10px]">شعار</div>
-                  <h3 className="font-extrabold text-lg leading-tight uppercase">الجماعة الترابية</h3>
-               </div>
-               <p className="text-emerald-100/70 text-sm leading-relaxed mb-6">
-                  البوابة الرسمية للجماعة الترابية، نهدف من خلالها إلى تقريب الخدمات من المواطنين وتكريس مبدأ الإدارة الرقمية والشفافية.
+               <h4 className="font-bold text-lg mb-6">{t('communeName')}</h4>
+               <p className="text-gray-300 text-sm leading-relaxed mb-8">
+                  {t('footerDesc')}
                </p>
                <div className="flex gap-4">
-                 <Facebook size={20} className="hover:text-yellow-400 cursor-pointer transition-colors" />
-                 <Instagram size={20} className="hover:text-yellow-400 cursor-pointer transition-colors" />
-                 <Youtube size={20} className="hover:text-yellow-400 cursor-pointer transition-colors" />
+                 {[
+                   { Icon: Facebook, color: 'hover:bg-blue-600', label: 'Facebook' },
+                   { Icon: Instagram, color: 'hover:bg-pink-600', label: 'Instagram' },
+                   { Icon: Youtube, color: 'hover:bg-red-600', label: 'Youtube' },
+                   { Icon: Twitter, color: 'hover:bg-blue-400', label: 'Twitter' }
+                 ].map((social, idx) => (
+                   <div 
+                    key={idx}
+                    className={`w-10 h-10 rounded-full bg-white/10 flex items-center justify-center cursor-pointer transition-all duration-300 ${social.color} hover:scale-110 hover:shadow-lg`}
+                    title={social.label}
+                   >
+                     <social.Icon size={18} />
+                   </div>
+                 ))}
                </div>
             </div>
 
             <div>
-              <h4 className="font-bold text-lg mb-6 border-r-4 border-yellow-500 pr-3">روابط سريعة</h4>
-              <ul className="space-y-3 text-emerald-100/70 text-sm font-medium">
-                <li><Link to="/about" className="hover:text-white transition-colors">عن الجماعة</Link></li>
-                <li><Link to="/services" className="hover:text-white transition-colors">الخدمات الإلكترونية</Link></li>
-                <li><Link to="/news" className="hover:text-white transition-colors">آخر الأخبار</Link></li>
-                <li><Link to="/announcements" className="hover:text-white transition-colors">الإعلانات والطلبات</Link></li>
+              <h4 className="font-bold text-lg mb-6">{t('projectsFooter')}</h4>
+              <ul className="space-y-3 text-gray-300 text-sm">
+                <li><Link to="/projects" className="hover:text-white transition-colors">{t('devProjects')}</Link></li>
+                <li><Link to="/projects" className="hover:text-white transition-colors">{t('greenSpaces')}</Link></li>
+                <li><Link to="/projects" className="hover:text-white transition-colors">{t('infrastructure')}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-lg mb-6 border-r-4 border-yellow-500 pr-3">مشاريع</h4>
-              <ul className="space-y-3 text-emerald-100/70 text-sm font-medium">
-                <li><Link to="/projects" className="hover:text-white transition-colors">مشاريع التهيئة</Link></li>
-                <li><Link to="/projects" className="hover:text-white transition-colors">الفضاءات الخضراء</Link></li>
-                <li><Link to="/projects" className="hover:text-white transition-colors">الإنارة العمومية</Link></li>
-                <li><Link to="/projects" className="hover:text-white transition-colors">البنية التحتية</Link></li>
+              <h4 className="font-bold text-lg mb-6">{t('quickLinks')}</h4>
+              <ul className="space-y-3 text-gray-300 text-sm">
+                <li><Link to="/about" className="hover:text-white transition-colors">{t('aboutLink')}</Link></li>
+                <li><Link to="/services" className="hover:text-white transition-colors">{t('eServices')}</Link></li>
+                <li><Link to="/news" className="hover:text-white transition-colors">{t('latestNews')}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-lg mb-6 border-r-4 border-yellow-500 pr-3">اتصل بنا</h4>
-              <ul className="space-y-4 text-emerald-100/70 text-sm font-medium">
+              <h4 className="font-bold text-lg mb-6">{t('contactUs')}</h4>
+              <ul className="space-y-4 text-gray-300 text-sm">
                 <li className="flex items-center gap-3">
-                   <Phone size={18} className="text-yellow-500" />
-                   <span dir="ltr">+212 5 37 23 45 67</span>
+                   <Phone size={18} className="text-blue-400" />
+                   <span dir="ltr">+212 5 39 91 23 45</span>
                 </li>
                 <li className="flex items-center gap-3">
-                   <Globe size={18} className="text-yellow-500" />
-                   <span>contact@commune.ma</span>
+                   <Mail size={18} className="text-blue-400" />
+                   <span>contact@larache.ma</span>
                 </li>
                 <li className="flex items-start gap-3">
-                   <MapPin size={18} className="text-yellow-500 shrink-0" />
-                   <span>شارع محمد الخامس، مركز المدينة</span>
+                   <User size={18} className="text-blue-400 shrink-0" />
+                   <span>شارع محمد الخامس، العرائش</span>
                 </li>
               </ul>
             </div>
 
           </div>
 
-          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-emerald-100/50 uppercase tracking-widest">
-             <p>© 2024 الجماعة الترابية - جميع الحقوق محفوظة</p>
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-gray-400">
+             <p>© {new Date().getFullYear()} الجماعة الترابية - جميع الحقوق محفوظة</p>
              <div className="flex gap-6">
+                <span className="cursor-pointer hover:text-white transition-colors">خريطة</span>
                 <span className="cursor-pointer hover:text-white transition-colors">سياسة الخصوصية</span>
                 <span className="cursor-pointer hover:text-white transition-colors">شروط الاستخدام</span>
-                <span className="cursor-pointer hover:text-white transition-colors">خريطة الموقع</span>
              </div>
           </div>
         </div>
@@ -216,20 +225,3 @@ const PublicLayout = () => {
 
 export default PublicLayout;
 
-const MapPin = ({ size, className }: { size: number, className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-    <circle cx="12" cy="10" r="3"/>
-  </svg>
-);

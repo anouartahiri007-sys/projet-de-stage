@@ -1,148 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --primary-main: #152C4D;
-    --primary-light: #3466A4;
-    --primary-dark: #0F1F36;
-
-    --color-healthcare-600: #10B981;
-    --color-healthcare-500: #34D399;
-    --color-healthcare-50: #ECFDF5;
-
-    --color-accent-blue: #3B82F6;
-    --color-accent-purple: #8B5CF6;
-    --color-accent-teal: #0D9488;
-    --color-accent-orange: #F97316;
-
-    --color-govBackground: #F4F7FB;
-
-    --text-primary: #1E293B;
-    --text-secondary: #64748B;
-    --text-on-dark: #FFFFFF;
-    --text-on-dark-dim: #E2E8F0;
-
-    --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
-    --font-body: 'Inter', sans-serif;
-
-    --radius-gov: 18px;
-    --shadow-gov-card: 0px 4px 20px rgba(0, 0, 0, 0.03), 0px 2px 8px rgba(0, 0, 0, 0.02);
-
-    --card-padding: 1.5rem;
-    /* Normal density */
-  }
-
-  /* Themes */
-  .theme-forest {
-    --primary-main: #064E3B;
-    --primary-light: #10B981;
-    --primary-dark: #062F24;
-  }
-
-  .theme-royal {
-    --primary-main: #4C1D95;
-    --primary-light: #8B5CF6;
-    --primary-dark: #2E1065;
-  }
-
-  /* Densities */
-  .density-compact {
-    --card-padding: 0.75rem;
-  }
-
-  .density-spacieux {
-    --card-padding: 2.5rem;
-  }
-
-  .dark {
-    --color-govBackground: #0F172A;
-    --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --shadow-gov-card: 0px 4px 20px rgba(0, 0, 0, 0.2);
-  }
-
-  body {
-    background-color: var(--color-govBackground);
-    color: var(--text-primary);
-    @apply font-body antialiased transition-colors duration-300;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-heading tracking-tight;
-    color: var(--text-primary);
-  }
-
-  .text-on-dark {
-    color: var(--text-on-dark);
-  }
-
-  .text-on-dark-dim {
-    color: var(--text-on-dark-dim);
-  }
+:root {
+  /* Government Palette */
+  --gov-primary: #003366;    /* Royal Navy */
+  --gov-secondary: #006241;  /* Emerald Green */
+  --gov-accent: #C5A059;     /* Moroccan Gold */
+  --gov-bg: #F8FAFC;         /* Soft Gray/Blue */
+  --gov-card-shadow: 0 10px 40px -10px rgba(0, 51, 102, 0.08);
 }
 
+.dark {
+  --gov-bg: #0F172A;
+}
+
+body {
+  @apply bg-[var(--gov-bg)] text-slate-800;
+  font-family: 'Inter', 'Cairo', sans-serif;
+}
+
+.font-arabic {
+  font-family: 'Cairo', sans-serif;
+}
+
+/* Premium Components */
 @layer components {
   .gov-card {
-    @apply bg-white dark:bg-slate-800 rounded-[var(--radius-gov)] shadow-[var(--shadow-gov-card)] border border-slate-100 dark:border-slate-700 overflow-hidden transition-all duration-300;
-    padding: var(--card-padding);
+    @apply bg-white dark:bg-slate-800 rounded-[2.5rem] border border-gray-100 dark:border-slate-700 shadow-[var(--gov-card-shadow)] transition-all duration-500 hover:shadow-xl hover:shadow-blue-900/5;
   }
-
-  .gov-card:hover {
-    @apply shadow-lg border-slate-300/80 dark:border-slate-500;
-  }
-
+  
   .btn-primary {
-    background-color: var(--primary-light);
-    @apply text-white px-5 py-2.5 rounded-gov font-bold text-sm hover:opacity-90 transition-all duration-200 shadow-md active:scale-95;
+    @apply px-8 py-4 bg-[var(--gov-primary)] text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-900/20 active:scale-95 transition-all flex items-center justify-center gap-3;
   }
-
+  
   .btn-secondary {
-    @apply bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white px-5 py-2.5 rounded-gov font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 active:scale-95;
+    @apply px-8 py-4 bg-white text-[var(--gov-primary)] border border-gray-100 rounded-2xl font-black uppercase tracking-widest text-xs shadow-sm hover:bg-gray-50 active:scale-95 transition-all flex items-center justify-center gap-3;
   }
 
-  .form-input {
-    @apply w-full border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 rounded-xl px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary-light)] focus:ring-opacity-30 focus:border-[var(--primary-light)] transition-all;
+  .input-gov {
+    @apply w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-slate-700 focus:ring-2 focus:ring-[var(--gov-accent)] transition-all placeholder:text-slate-300;
   }
-}
-
-/* Custom scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
 }
 
 /* Animations */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes premium-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.animate-slide-up {
-  animation: slideUp 0.4s ease-out forwards;
+.animate-premium-in {
+  animation: premium-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Moroccan Pattern Overlay */
+.pattern-moroccan {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 30-30 30L0 30z' fill='%23C5A059' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
 }
