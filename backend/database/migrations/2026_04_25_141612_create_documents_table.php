@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('candidature_id')->constrained()->onDelete('cascade');
+            $table->foreignId('candidature_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('file_path');
             $table->string('document_type'); // e.g. cv, cin, diplome

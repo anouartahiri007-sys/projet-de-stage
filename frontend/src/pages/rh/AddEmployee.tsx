@@ -55,17 +55,42 @@ const AddEmployee = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const [successData, setSuccessData] = useState<{ email: string, password: string, fonctionnaire: any, matricule: string } | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post('/fonctionnaires', formData);
+      const response = await api.post('/fonctionnaires', formData);
       toast.success(lang === 'ar' ? 'تم إنشاء الموظف بنجاح (الرقم: ' + nextMatricule + ')' : 'Employé créé avec succès (ID: ' + nextMatricule + ')');
-      navigate('/rh/employees');
+      setSuccessData(response.data);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Erreur');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadPdf = async () => {
+    if (!successData) return;
+    const toastId = toast.loading('Préparation du PDF...');
+    try {
+      // The backend saves it to storage/app/public/documents/rh/onboarding_MATRICULE.pdf
+      // We can fetch it or just redirect to a download route
+      // Let's use a new download endpoint or fetch directly if public
+      const response = await api.get(`/fonctionnaires/${successData.fonctionnaire.id}/onboarding-pdf`, { responseType: 'blob' });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `onboarding_${successData.matricule}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      toast.success('Téléchargé avec succès', { id: toastId });
+    } catch (error) {
+      toast.error('Erreur lors du téléchargement', { id: toastId });
     }
   };
 
@@ -89,6 +114,46 @@ const AddEmployee = () => {
         </button>
       </div>
 
+      {successData ? (
+        <div className="gov-card p-12 text-center animate-scale-in">
+          <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+            <ShieldCheck size={48} />
+          </div>
+          <h2 className="text-3xl font-black text-[#003366] mb-4">
+            {lang === 'ar' ? 'تم إنشاء الحساب بنجاح' : 'Compte Créé avec Succès'}
+          </h2>
+          <p className="text-slate-500 mb-8 max-w-lg mx-auto">
+            {lang === 'ar' 
+              ? 'تم توليد حساب الموظف، وتم إرسال رسالة بريد إلكتروني تحتوي على العقد الإداري ومعلومات الدخول.'
+              : 'Le compte de l\'employé a été généré. Un email contenant l\'acte de recrutement et les identifiants lui a été envoyé.'}
+          </p>
+
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 max-w-xl mx-auto text-left mb-8 space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-4">
+              <span className="text-slate-500 font-bold uppercase text-xs">Email :</span>
+              <span className="font-black text-[#003366]">{successData.email}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-slate-200 pb-4">
+              <span className="text-slate-500 font-bold uppercase text-xs">Mot de passe :</span>
+              <span className="font-mono bg-white px-3 py-1 rounded border border-slate-200 font-bold text-rose-600 tracking-widest">{successData.password}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-bold uppercase text-xs">Matricule :</span>
+              <span className="font-black text-emerald-600">{successData.matricule}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-4">
+            <button onClick={downloadPdf} className="bg-[#003366] hover:bg-[#002244] text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all">
+              <Save size={20} />
+              {lang === 'ar' ? 'تحميل العقد الإداري (PDF)' : 'Télécharger l\'acte (PDF)'}
+            </button>
+            <button onClick={() => navigate('/rh/employees')} className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold shadow-sm transition-all">
+              {lang === 'ar' ? 'العودة للقائمة' : 'Retour à la liste'}
+            </button>
+          </div>
+        </div>
+      ) : (
       <form id="add-employee-form" className="space-y-10" onSubmit={handleSubmit}>
         
         {/* Section 1: Identity & Bilingual Names */}
@@ -288,6 +353,7 @@ const AddEmployee = () => {
         </button>
 
       </form>
+      )}
     </div>
   );
 };

@@ -5,10 +5,10 @@ import {
   List, Briefcase, TrendingUp, Star, History,
   Route, DollarSign, Gift, ScrollText, Calendar,
   CalendarDays, CalendarCheck, FileText, FilePlus,
-  Bell, BarChart3, PieChart, Menu, ChevronDown,
+  Bell, BarChart3, Menu, ChevronDown,
   PawPrint, Activity, Syringe, AlertTriangle, User as UserIcon, LogOut,
   ClipboardList, Settings as SettingsIcon, Globe, ChevronLeft,
-  LayoutDashboard, UserCircle, Search, Layers, FileSignature
+  LayoutDashboard, UserCircle, Search, Layers
 } from 'lucide-react';
 import { useAuthStore } from '../lib/auth';
 import { useLang } from '../context/LangContext';
@@ -42,15 +42,12 @@ const MainLayout = () => {
       items: [
         { title: t('employees'), icon: <Users size={20} />, path: '/rh/employees' },
         { title: t('addEmployee'), icon: <UserPlus size={20} />, path: '/rh/employees/add' },
-        { title: t('recruitment'), icon: <Briefcase size={20} />, path: '/rh/recrutement' },
-        { title: t('organigramme'), icon: <Layers size={20} />, path: '/rh/organigramme' },
       ]
     },
     {
       group: t('administrativeActs') || 'الإجراءات الإدارية',
       items: [
-        { title: t('administrativeActs') || 'القرارات الإدارية', icon: <FileSignature size={20} />, path: '/rh/acts' },
-        { title: t('promotions'), icon: <TrendingUp size={20} />, path: '/rh/promotions' },
+        { title: t('administrativeActs') || 'القرارات الإدارية', icon: <FileText size={20} />, path: '/rh/acts' },
         { title: t('careerPath'), icon: <Route size={20} />, path: '/rh/career-path' },
         { title: t('rolesPermissions'), icon: <Shield size={20} />, path: '/rh/roles' },
       ]
@@ -58,19 +55,19 @@ const MainLayout = () => {
     {
       group: t('intelReports') || 'الذكاء والتقارير',
       items: [
-        { title: t('hrReports'), icon: <BarChart3 size={20} />, path: '/rh/reports' },
-        { title: t('statistics'), icon: <PieChart size={20} />, path: '/rh/statistics' },
+        { title: t('statistics'), icon: <BarChart3 size={20} />, path: '/rh/statistics' },
       ]
     },
     {
       group: t('operations') || 'العمليات',
       items: [
         { title: t('documents'), icon: <FileText size={20} />, path: '/rh/documents' },
-        { title: t('notifications'), icon: <Bell size={20} />, path: '/rh/notifications' },
-        { title: t('settings'), icon: <SettingsIcon size={20} />, path: '/parametres' },
+        { title: t('systemHealth') || 'جودة النظام', icon: <Activity size={20} />, path: '/rh/system-health' },
       ]
     }
   ];
+
+  const [profileOpen, setProfileOpen] = useState(false);
 
   return (
     <div className={`flex h-screen bg-[#F8FAFC] text-gray-800 font-sans overflow-hidden ${lang === 'ar' ? 'font-arabic' : ''}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
@@ -125,16 +122,6 @@ const MainLayout = () => {
               </ul>
             </div>
           ))}
-
-          <div className="mt-20 pt-8 border-t border-white/5">
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-4 px-6 py-5 w-full text-sm font-black text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-2xl transition-all"
-            >
-              <LogOut size={20} />
-              {t('logout')}
-            </button>
-          </div>
         </nav>
       </aside>
 
@@ -178,24 +165,66 @@ const MainLayout = () => {
               </button>
 
               <div className="flex items-center gap-6 border-l border-gray-100 pl-6">
-                <button className="relative text-slate-400 hover:text-[#006241] transition-colors p-3 hover:bg-emerald-50 rounded-2xl">
+                <button 
+                  onClick={() => navigate('/rh/notifications')}
+                  className="relative text-slate-400 hover:text-[#006241] transition-colors p-3 hover:bg-emerald-50 rounded-2xl"
+                >
                   <Bell size={24} />
                   <span className="absolute top-2 right-2 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">3</span>
                 </button>
 
-                <div className="flex items-center gap-5 cursor-pointer group hover:bg-gray-50 p-2 rounded-2xl transition-all">
-                   <div className="relative">
-                      <img
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
-                        alt="Profile"
-                        className="w-14 h-14 rounded-2xl object-cover border-4 border-white shadow-2xl group-hover:scale-105 transition-transform"
-                      />
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white shadow-sm"></div>
-                   </div>
-                   <div className={`hidden lg:block ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-                      <h3 className="text-sm font-black text-[#003366] leading-none mb-1 group-hover:text-[#C5A059] transition-colors">{user?.name || 'سعاد الإدريسي'}</h3>
-                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Administrator</p>
-                   </div>
+                <div className="relative">
+                  <div 
+                    onClick={() => setProfileOpen(!profileOpen)}
+                    className="flex items-center gap-5 cursor-pointer group hover:bg-gray-50 p-2 rounded-2xl transition-all"
+                  >
+                    <div className="relative">
+                        <img
+                          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
+                          alt="Profile"
+                          className="w-14 h-14 rounded-2xl object-cover border-4 border-white shadow-2xl group-hover:scale-105 transition-transform"
+                        />
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white shadow-sm"></div>
+                    </div>
+                    <div className={`hidden lg:block ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                        <h3 className="text-sm font-black text-[#003366] leading-none mb-1 group-hover:text-[#C5A059] transition-colors">{user?.name || 'سعاد الإدريسي'}</h3>
+                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{t('administrator') || 'Administrator'}</p>
+                    </div>
+                    <ChevronDown size={16} className={`text-slate-300 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                  </div>
+
+                  {/* Profile Dropdown */}
+                  {profileOpen && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setProfileOpen(false)}></div>
+                      <div className={`absolute top-full mt-2 ${lang === 'ar' ? 'left-0' : 'right-0'} w-64 bg-white rounded-[2rem] shadow-2xl border border-gray-100 py-4 z-20 animate-premium-in`}>
+                        <Link 
+                          to={`/personnel/${user?.id || 1}`} 
+                          onClick={() => setProfileOpen(false)}
+                          className={`flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-sm font-bold text-slate-600 ${lang === 'ar' ? 'flex-row-reverse text-right' : ''}`}
+                        >
+                          <UserIcon size={18} className="text-[#C5A059]" />
+                          <span>{t('profile') || 'الملف الشخصي'}</span>
+                        </Link>
+                        <Link 
+                          to="/parametres" 
+                          onClick={() => setProfileOpen(false)}
+                          className={`flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-sm font-bold text-slate-600 ${lang === 'ar' ? 'flex-row-reverse text-right' : ''}`}
+                        >
+                          <SettingsIcon size={18} className="text-[#C5A059]" />
+                          <span>{t('settings') || 'الإعدادات'}</span>
+                        </Link>
+                        <div className="h-px bg-gray-50 mx-4 my-2"></div>
+                        <button 
+                          onClick={handleLogout}
+                          className={`flex items-center gap-4 px-6 py-4 hover:bg-rose-50 transition-colors text-sm font-black text-rose-500 w-full ${lang === 'ar' ? 'flex-row-reverse text-right' : ''}`}
+                        >
+                          <LogOut size={18} />
+                          <span>{t('logout') || 'تسجيل الخروج'}</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

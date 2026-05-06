@@ -61,11 +61,15 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead']);
     Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
     
+    // Official Documents
+    Route::get('/documents', [DocumentController::class, 'index']);
+    Route::post('/documents/upload', [DocumentController::class, 'upload']);
+    Route::get('/documents/{document}/download', [DocumentController::class, 'download']);
+
     // Candidate Actions
     Route::middleware('role:candidat')->group(function () {
         Route::get('/candidatures/my', [CandidatureController::class, 'myCandidatures']);
         Route::post('/concours/{concours}/apply', [CandidatureController::class, 'apply']);
-        Route::post('/documents/upload', [DocumentController::class, 'upload']);
     });
 
     // Fonctionnaire Actions
@@ -88,6 +92,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/fonctionnaires', [\App\Http\Controllers\FonctionnaireController::class, 'index']);
         Route::get('/fonctionnaires/{id}', [\App\Http\Controllers\FonctionnaireController::class, 'show']);
         Route::post('/fonctionnaires', [\App\Http\Controllers\FonctionnaireController::class, 'store']);
+        Route::get('/fonctionnaires/{id}/onboarding-pdf', [\App\Http\Controllers\FonctionnaireController::class, 'downloadOnboardingPdf']);
         Route::put('/fonctionnaires/{id}', [\App\Http\Controllers\FonctionnaireController::class, 'update']);
         Route::delete('/fonctionnaires/{id}', [\App\Http\Controllers\FonctionnaireController::class, 'destroy']);
         

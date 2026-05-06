@@ -28,7 +28,7 @@ const EmployeeList = () => {
       const res = await api.get('/fonctionnaires');
       setEmployees(res.data);
     } catch (err) {
-      toast.error("Erreur lors du chargement des employés");
+      toast.error(t('fetchError'));
     } finally {
       setLoading(false);
     }
@@ -75,9 +75,9 @@ const EmployeeList = () => {
     try {
       await api.delete(`/fonctionnaires/${id}`);
       setEmployees(prev => prev.filter(e => e.id !== id));
-      toast.success(lang === 'ar' ? 'تم الحذف بنجاح' : 'Supprimé avec succès');
+      toast.success(t('deleteSuccess'));
     } catch (err) {
-      toast.error("Erreur lors de la suppression");
+      toast.error(t('error'));
     }
   };
 
@@ -111,79 +111,79 @@ const EmployeeList = () => {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
         <div>
-          <h1 className="text-4xl font-black text-[#003366] tracking-tight uppercase">
-             {t('employees')}
-          </h1>
-          <nav className="flex items-center gap-3 text-xs font-black text-slate-400 mt-3 uppercase tracking-widest">
-            <span className="hover:text-[#006241] cursor-pointer transition-colors" onClick={() => navigate('/dashboard')}>{t('dashboard')}</span>
-            <ChevronRight size={14} className={lang === 'ar' ? 'rotate-180' : ''} />
-            <span className="text-[#C5A059]">{t('employees')}</span>
-          </nav>
+            <h1 className="text-4xl font-black text-[#003366] tracking-tight uppercase">
+              {t('employees')}
+            </h1>
+            <nav className="flex items-center gap-3 text-xs font-black text-slate-400 mt-3 uppercase tracking-widest">
+              <span className="hover:text-[#006241] cursor-pointer transition-colors" onClick={() => navigate('/dashboard')}>{t('dashboard')}</span>
+              <ChevronRight size={14} className={lang === 'ar' ? 'rotate-180' : ''} />
+              <span className="text-[#C5A059]">{t('employees')}</span>
+            </nav>
+          </div>
+          
+          <div className="flex items-center gap-4 w-full lg:w-auto">
+            <button onClick={handleExport} className="flex-1 lg:flex-none btn-secondary">
+               <Download size={18} />
+               {lang === 'ar' ? 'تصدير' : 'Exporter'}
+            </button>
+            <button
+              onClick={() => navigate('/rh/employees/add')}
+              className="flex-1 lg:flex-none btn-primary"
+            >
+              <Plus size={20} />
+              {t('addEmployee')}
+            </button>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-4 w-full lg:w-auto">
-          <button onClick={handleExport} className="flex-1 lg:flex-none btn-secondary">
-             <Download size={18} />
-             {lang === 'ar' ? 'تصدير التقارير' : 'Exporter'}
-          </button>
-          <button
-            onClick={() => navigate('/rh/employees/add')}
-            className="flex-1 lg:flex-none btn-primary"
-          >
-            <Plus size={20} />
-            {t('addEmployee')}
-          </button>
+  
+        {/* Stats Summary Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            { label: lang === 'ar' ? 'إجمالي الموظفين' : 'Total Effectif', count: employees.length, active: activeTab === 'all', id: 'all', color: 'blue' },
+            { label: t('active'), count: employees.filter(e => e.status?.toLowerCase() === 'active').length, active: activeTab === 'active', id: 'active', color: 'emerald' },
+            { label: t('onLeave'), count: employees.filter(e => e.status?.toLowerCase() === 'onleave').length, active: activeTab === 'onleave', id: 'onleave', color: 'amber' },
+            { label: t('inactive'), count: employees.filter(e => e.status?.toLowerCase() === 'inactive').length, active: activeTab === 'inactive', id: 'inactive', color: 'rose' },
+          ].map((tab) => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`p-8 rounded-[2.5rem] border transition-all flex flex-col items-start gap-3 relative overflow-hidden group ${
+                tab.active 
+                ? 'bg-[#003366] border-[#003366] text-white shadow-2xl shadow-blue-900/20' 
+                : 'bg-white border-gray-100 text-slate-500 hover:border-[#C5A059] hover:bg-gray-50'
+              }`}
+            >
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 z-10">{tab.label}</span>
+              <span className="text-3xl font-black z-10">{tab.count}</span>
+              <div className={`absolute -right-4 -bottom-4 opacity-[0.05] group-hover:scale-110 transition-transform ${tab.active ? 'text-white' : 'text-[#003366]'}`}>
+                 <Users size={80} />
+              </div>
+            </button>
+          ))}
         </div>
-      </div>
-
-      {/* Stats Summary Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[
-          { label: lang === 'ar' ? 'إجمالي الموظفين' : 'Total Effectif', count: employees.length, active: activeTab === 'all', id: 'all', color: 'blue' },
-          { label: lang === 'ar' ? 'نشط' : 'Actif', count: employees.filter(e => e.status?.toLowerCase() === 'active').length, active: activeTab === 'active', id: 'active', color: 'emerald' },
-          { label: lang === 'ar' ? 'في رخصة' : 'En congé', count: employees.filter(e => e.status?.toLowerCase() === 'onleave').length, active: activeTab === 'onleave', id: 'onleave', color: 'amber' },
-          { label: lang === 'ar' ? 'غير نشط' : 'Inactif', count: employees.filter(e => e.status?.toLowerCase() === 'inactive').length, active: activeTab === 'inactive', id: 'inactive', color: 'rose' },
-        ].map((tab) => (
-          <button 
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`p-8 rounded-[2.5rem] border transition-all flex flex-col items-start gap-3 relative overflow-hidden group ${
-              tab.active 
-              ? 'bg-[#003366] border-[#003366] text-white shadow-2xl shadow-blue-900/20' 
-              : 'bg-white border-gray-100 text-slate-500 hover:border-[#C5A059] hover:bg-gray-50'
-            }`}
-          >
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 z-10">{tab.label}</span>
-            <span className="text-3xl font-black z-10">{tab.count}</span>
-            <div className={`absolute -right-4 -bottom-4 opacity-[0.05] group-hover:scale-110 transition-transform ${tab.active ? 'text-white' : 'text-[#003366]'}`}>
-               <Users size={80} />
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Main Table Container */}
-      <div className="gov-card overflow-hidden">
-        
-        {/* Table Controls */}
-        <div className="p-10 border-b border-gray-50 bg-gray-50/30 flex flex-col lg:flex-row justify-between items-center gap-8">
-           <div className="relative w-full lg:w-96 group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C5A059] transition-colors" size={20} />
-              <input 
-                type="text" 
-                placeholder={lang === 'ar' ? 'بحث عن موظف (الاسم، الرقم، البريد)...' : 'Rechercher un employé...'}
-                className="w-full bg-white border-gray-100 rounded-2xl pl-14 pr-6 py-4 font-bold text-slate-700 focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all shadow-sm"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-           </div>
-           
-           <div className="flex items-center gap-4 w-full lg:w-auto">
-              <p className="text-xs font-black text-slate-300 uppercase tracking-widest hidden lg:block">
-                 {lang === 'ar' ? `تم العثور على ${filteredEmployees.length} نتيجة` : `${filteredEmployees.length} résultats trouvés`}
-              </p>
-           </div>
-        </div>
+  
+        {/* Main Table Container */}
+        <div className="gov-card overflow-hidden">
+          
+          {/* Table Controls */}
+          <div className="p-10 border-b border-gray-50 bg-gray-50/30 flex flex-col lg:flex-row justify-between items-center gap-8">
+             <div className="relative w-full lg:w-96 group">
+                <Search className={`absolute ${lang === 'ar' ? 'right-6' : 'left-6'} top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C5A059] transition-colors`} size={20} />
+                <input 
+                  type="text" 
+                  placeholder={lang === 'ar' ? 'بحث عن موظف (الاسم، الرقم، البريد)...' : 'Rechercher un employé...'}
+                  className={`w-full bg-white border-gray-100 rounded-2xl py-4 font-bold text-slate-700 focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all shadow-sm ${lang === 'ar' ? 'pr-14 pl-6 text-right' : 'pl-14 pr-6 text-left'}`}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+             </div>
+             
+             <div className="flex items-center gap-4 w-full lg:w-auto">
+                <p className="text-xs font-black text-slate-300 uppercase tracking-widest hidden lg:block">
+                   {lang === 'ar' ? `تم العثور على ${filteredEmployees.length} نتيجة` : `${filteredEmployees.length} résultats trouvés`}
+                </p>
+             </div>
+          </div>
 
         {/* Table Content */}
         <div className="overflow-x-auto custom-scrollbar">

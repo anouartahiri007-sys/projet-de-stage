@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLang } from '../context/LangContext';
-import { Info, CheckCircle, AlertTriangle, Bell, Clock, Trash2 } from 'lucide-react';
+import { Info, CheckCircle, AlertTriangle, Bell, Clock, Trash2, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 const MOCK_NOTIFS = (t: any) => [
@@ -12,6 +13,7 @@ const MOCK_NOTIFS = (t: any) => [
 
 export default function Notifications() {
   const { t, lang } = useLang();
+  const navigate = useNavigate();
   const [notifs, setNotifs] = useState(MOCK_NOTIFS(t));
 
   const NOTIF_STYLES = {
@@ -32,14 +34,21 @@ export default function Notifications() {
 
   return (
     <div className="animate-slide-up space-y-6 pb-12" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-          <h1 className="text-3xl font-black text-[#1E3E6E] dark:text-white tracking-tight">{t('notifications')}</h1>
-          <p className="text-slate-500 mt-1 font-medium italic">{t('notificationsDesc')}</p>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+        <div>
+          <h1 className="text-4xl font-black text-[#003366] tracking-tight uppercase">
+             {t('notifications')}
+          </h1>
+          <nav className="flex items-center gap-3 text-xs font-black text-slate-400 mt-3 uppercase tracking-widest">
+            <span className="hover:text-[#006241] cursor-pointer transition-colors" onClick={() => navigate('/dashboard')}>{t('dashboard')}</span>
+            <ChevronRight size={14} className={lang === 'ar' ? 'rotate-180' : ''} />
+            <span className="text-[#C5A059]">{t('notifications')}</span>
+          </nav>
         </div>
+        
         <button 
           onClick={markAllRead}
-          className="text-xs font-black text-[#3466A4] hover:underline uppercase tracking-widest"
+          className="btn-secondary px-8"
         >
           {t('markAllRead')}
         </button>

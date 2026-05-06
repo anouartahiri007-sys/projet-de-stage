@@ -1,19 +1,28 @@
-import { PieChart, BarChart3, TrendingUp, Users, Calendar, Activity } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Calendar, Activity, ChevronRight } from 'lucide-react';
 import { useLang } from '../../context/LangContext';
+import { useNavigate } from 'react-router-dom';
 
 const Statistics = () => {
   const { t, lang } = useLang();
+  const navigate = useNavigate();
 
   return (
     <div className="animate-slide-up space-y-8 pb-12" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${lang === 'ar' ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-        <div className="bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm flex gap-1">
-          <button className="px-4 py-1.5 bg-emerald-50 text-[#0d5e3f] rounded-lg text-xs font-bold">{lang === 'ar' ? 'هذا الشهر' : 'Ce mois'}</button>
-          <button className="px-4 py-1.5 text-gray-400 rounded-lg text-xs font-bold hover:bg-gray-50 dark:hover:bg-slate-700">{lang === 'ar' ? 'هذه السنة' : 'Cette année'}</button>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+        <div>
+          <h1 className="text-4xl font-black text-[#003366] tracking-tight uppercase">
+             {t('statistics')}
+          </h1>
+          <nav className="flex items-center gap-3 text-xs font-black text-slate-400 mt-3 uppercase tracking-widest">
+            <span className="hover:text-[#006241] cursor-pointer transition-colors" onClick={() => navigate('/dashboard')}>{t('dashboard')}</span>
+            <ChevronRight size={14} className={lang === 'ar' ? 'rotate-180' : ''} />
+            <span className="text-[#C5A059]">{t('statistics')}</span>
+          </nav>
         </div>
-        <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white font-heading">{t('statistics')}</h1>
-          <p className="text-sm text-gray-500 mt-1">{t('home')} / {t('hrReports')} / {t('statistics')}</p>
+        
+        <div className="bg-white p-1.5 rounded-xl border border-gray-100 shadow-sm flex gap-1">
+          <button className="px-4 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black uppercase tracking-widest">{lang === 'ar' ? 'هذا الشهر' : 'Ce mois'}</button>
+          <button className="px-4 py-1.5 text-slate-400 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-gray-50">{lang === 'ar' ? 'هذه السنة' : 'Cette année'}</button>
         </div>
       </div>
 
@@ -75,7 +84,7 @@ const Statistics = () => {
 
         <div className="lg:col-span-4 gov-card p-8 flex flex-col border-b-4 border-b-blue-500">
           <h2 className={`text-xl font-black text-gray-800 dark:text-white mb-8 flex items-center gap-3 uppercase tracking-widest ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-            <PieChart size={24} className="text-[#0d5e3f]" />
+            <BarChart3 size={24} className="text-[#0d5e3f]" />
             {lang === 'ar' ? 'نسبة الأدوار' : 'Rôles'}
           </h2>
           

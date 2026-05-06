@@ -123,12 +123,12 @@ const AdministrativeActForm = () => {
   };
 
   const actTypes = [
-    { id: 'recrutement', icon: <UserPlus />, color: 'emerald', label: 'Recrutement' },
-    { id: 'nomination', icon: <Star />, color: 'amber', label: 'Nomination' },
-    { id: 'titularisation', icon: <ShieldCheck />, color: 'blue', label: 'Titularisation' },
-    { id: 'notation', icon: <History />, color: 'purple', label: 'Notation' },
-    { id: 'avancement', icon: <TrendingUp />, color: 'rose', label: 'Avancement' },
-    { id: 'reclassement', icon: <Network />, color: 'indigo', label: 'Reclassement' },
+    { id: 'recrutement', icon: <UserPlus />, color: 'emerald', label: t('recrutement') || 'Recrutement' },
+    { id: 'nomination', icon: <Star />, color: 'amber', label: t('nomination') || 'Nomination' },
+    { id: 'titularisation', icon: <ShieldCheck />, color: 'blue', label: t('titularisation') || 'Titularisation' },
+    { id: 'notation', icon: <History />, color: 'purple', label: t('notation') || 'Notation' },
+    { id: 'avancement', icon: <TrendingUp />, color: 'rose', label: t('avancement') || 'Avancement' },
+    { id: 'reclassement', icon: <Network />, color: 'indigo', label: t('reclassement') || 'Reclassement' },
   ];
 
   // Search filter logic
@@ -136,7 +136,7 @@ const AdministrativeActForm = () => {
     const list = type === 'recrutement' ? candidates : employees;
     if (!searchQuery) return list;
     return list.filter(e => {
-      const searchStr = `${e.nom || e.last_name} ${e.prenom || e.first_name} ${e.matricule || e.cin}`.toLowerCase();
+      const searchStr = `${e.nom || e.last_name || ''} ${e.prenom || e.first_name || ''} ${e.matricule || e.cin || ''}`.toLowerCase();
       return searchStr.includes(searchQuery.toLowerCase());
     });
   }, [type, employees, candidates, searchQuery]);
@@ -901,7 +901,7 @@ const AdministrativeActForm = () => {
                         <button
                           key={act.id}
                           onClick={() => { setType(act.id); navigate(`/rh/acts/create/${act.id}`); setStep(1); }}
-                          className={`p-6 rounded-[2rem] border-2 transition-all flex items-center gap-6 group hover:border-[#C5A059] bg-[#F8FAFC]`}
+                          className={`p-6 rounded-[2rem] border-2 transition-all flex items-center gap-6 group hover:border-[#C5A059] bg-[#F8FAFC] ${lang === 'ar' ? 'flex-row-reverse text-right' : ''}`}
                         >
                            <div className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform text-${act.color}-600`}>
                               {act.icon}
@@ -919,11 +919,11 @@ const AdministrativeActForm = () => {
                    <h3 className="text-xl font-black text-[#003366]">{type === 'recrutement' ? (lang === 'ar' ? 'اختر المرشح للتوظيف' : 'Sélectionner le candidat') : (lang === 'ar' ? 'اختر الموظف المعني' : 'Sélectionner l\'employé')}</h3>
                    
                    <div className="relative group">
-                      <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C5A059] transition-colors" size={20} />
+                      <Search className={`absolute ${lang === 'ar' ? 'right-6' : 'left-6'} top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C5A059] transition-colors`} size={20} />
                       <input 
                         type="text" 
                         placeholder={lang === 'ar' ? 'البحث بالاسم أو بطاقة التعريف...' : 'Recherche par nom ou CIN...'}
-                        className="input-gov pl-14"
+                        className={`w-full bg-white border-gray-100 rounded-2xl py-4 font-bold text-slate-700 focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all shadow-sm ${lang === 'ar' ? 'pr-14 pl-6 text-right' : 'pl-14 pr-6 text-left'}`}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
@@ -943,7 +943,6 @@ const AdministrativeActForm = () => {
                          </div>
                       ) : (
                          filteredEntities.map((entity: any) => {
-                           // Extract true user data regardless of whether it's a Fonctionnaire or a nested Candidature
                            const person = type === 'recrutement' && entity.candidat ? entity.candidat : entity;
                            const displayName = `${person.nom || person.last_name || ''} ${person.prenom || person.first_name || ''}`.trim();
                            const displayId = person.matricule || person.cin || '---';
@@ -973,15 +972,15 @@ const AdministrativeActForm = () => {
               {/* Step 2: Dynamic Form */}
               {step === 2 && (
                 <div className="space-y-10 animate-fade-in">
-                   <div className="flex items-center justify-between bg-[#F8FAFC] p-6 rounded-[2rem]">
-                      <div className="flex items-center gap-4">
+                   <div className={`flex items-center justify-between bg-[#F8FAFC] p-6 rounded-[2rem] ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex items-center gap-4 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
                          <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-[#003366]"><Briefcase size={20}/></div>
-                         <div>
+                         <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
                             <h4 className="font-black text-[#003366]">{selectedEntity?.nom || selectedEntity?.last_name} {selectedEntity?.prenom || selectedEntity?.first_name}</h4>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{selectedEntity?.matricule || selectedEntity?.cin}</p>
                          </div>
                       </div>
-                      <button onClick={() => setStep(1)} className="text-[10px] font-black text-[#C5A059] uppercase hover:underline">Changer</button>
+                      <button onClick={() => setStep(1)} className="text-[10px] font-black text-[#C5A059] uppercase hover:underline">{lang === 'ar' ? 'تغيير' : 'Changer'}</button>
                    </div>
                    
                    {renderDynamicForm()}
@@ -994,13 +993,11 @@ const AdministrativeActForm = () => {
                    <h3 className="text-xl font-black text-[#003366]">{lang === 'ar' ? 'معاينة القرار الإداري' : 'Aperçu de la Décision'}</h3>
                    
                    <div className="bg-white border-2 border-[#003366]/10 rounded-[2rem] p-12 shadow-2xl relative overflow-hidden">
-                      {/* Watermark */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none">
                          <ShieldCheck size={400} />
                       </div>
                       
                       <div className="relative z-10 space-y-12">
-                         {/* Header PDF */}
                          <div className="text-center space-y-4 border-b border-gray-100 pb-8">
                             <img src="/logo.png" alt="Royaume du Maroc" className="h-16 mx-auto opacity-80" />
                             <h2 className="text-lg font-black text-[#003366] uppercase tracking-widest">
@@ -1009,10 +1006,9 @@ const AdministrativeActForm = () => {
                             <p className="text-xs font-bold text-slate-400">Réf: {new Date().getFullYear()}/ACT-{Math.floor(Math.random() * 1000)}</p>
                          </div>
                          
-                         {/* Body PDF */}
                          <div className="space-y-6">
                             <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                               Il a été décidé ce qui suit concernant M./Mme <span className="font-black text-[#003366] uppercase">{selectedEntity?.nom || selectedEntity?.last_name} {selectedEntity?.prenom || selectedEntity?.first_name}</span>, titulaire de la CIN <span className="font-black text-[#003366]">{selectedEntity?.cin}</span>:
+                               {lang === 'ar' ? 'تم اتخاذ القرار التالي بخصوص' : 'Il a été décidé ce qui suit concernant M./Mme'} <span className="font-black text-[#003366] uppercase">{selectedEntity?.nom || selectedEntity?.last_name} {selectedEntity?.prenom || selectedEntity?.first_name}</span>, {lang === 'ar' ? 'صاحب(ة) بطاقة التعريف' : 'titulaire de la CIN'} <span className="font-black text-[#003366]">{selectedEntity?.cin}</span>:
                             </p>
                             
                             <div className="grid grid-cols-2 gap-y-6 gap-x-10 bg-[#F8FAFC] p-8 rounded-2xl border border-gray-100">
@@ -1025,11 +1021,10 @@ const AdministrativeActForm = () => {
                             </div>
                          </div>
                          
-                         {/* Footer PDF */}
                          <div className="pt-12 text-right">
-                            <p className="text-xs font-bold text-slate-400 mb-8">Fait à Larache, le {new Date().toLocaleDateString()}</p>
+                            <p className="text-xs font-bold text-slate-400 mb-8">{lang === 'ar' ? 'حرر بالعرائش في' : 'Fait à Larache, le'} {new Date().toLocaleDateString()}</p>
                             <div className="w-48 h-24 border-2 border-dashed border-gray-200 rounded-xl ml-auto flex items-center justify-center">
-                               <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Signature & Cachet</span>
+                               <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{lang === 'ar' ? 'التوقيع والختم' : 'Signature & Cachet'}</span>
                             </div>
                          </div>
                       </div>
@@ -1038,13 +1033,13 @@ const AdministrativeActForm = () => {
               )}
 
               {/* Navigation Buttons */}
-              <div className="pt-10 flex justify-between mt-auto">
-                 {step > (urlType ? 1 : 0) && <button onClick={() => setStep(step - 1)} className="btn-secondary px-8"><ArrowLeft size={18}/> {lang === 'ar' ? 'رجوع' : 'Retour'}</button>}
-                 {step === 2 && <button onClick={() => setStep(3)} className="btn-primary px-12 ml-auto"><FileText size={18}/> {lang === 'ar' ? 'معاينة القرار' : 'Aperçu'} <ArrowRight size={18}/></button>}
+               <div className={`pt-10 flex justify-between mt-auto ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
+                  {step > (urlType ? 1 : 0) && <button onClick={() => setStep(step - 1)} className="btn-secondary px-8"><ArrowLeft size={18} className={lang === 'ar' ? 'rotate-180' : ''}/> {lang === 'ar' ? 'رجوع' : 'Retour'}</button>}
+                  {step === 2 && <button onClick={() => setStep(3)} className={`btn-primary px-12 ${lang === 'ar' ? 'mr-auto' : 'ml-auto'}`}><FileText size={18}/> {lang === 'ar' ? 'معاينة القرار' : 'Aperçu'} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''}/></button>}
                  {step === 3 && (
-                   <div className="flex gap-4 ml-auto">
+                    <div className={`flex gap-4 ${lang === 'ar' ? 'mr-auto' : 'ml-auto'}`}>
                       <button onClick={() => setStep(2)} className="btn-secondary px-8 text-[#C5A059]">{lang === 'ar' ? 'تعديل' : 'Modifier'}</button>
-                      <button onClick={() => handleSave('validated')} disabled={loading} className="btn-primary px-10 bg-[#006241]">✅ {lang === 'ar' ? 'اعتماد وإنشاء (Save & Version)' : 'Confirmer & Générer'}</button>
+                       <button onClick={() => handleSave('validated')} disabled={loading} className="btn-primary px-10 bg-[#006241]">✅ {lang === 'ar' ? 'اعتماد وإنشاء القرار' : 'Confirmer & Générer'}</button>
                    </div>
                  )}
               </div>

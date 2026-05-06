@@ -11,11 +11,9 @@ import { LangProvider } from './context/LangContext'
 // Pages
 import Dashboard from './pages/Dashboard'
 import EmployeeProfile from './features/employees/EmployeeProfile'
-import Recruitment from './pages/Recruitment'
 import Settings from './pages/Settings'
 import Training from './pages/Training'
 import Career from './pages/Career'
-import Reports from './pages/Reports'
 import AdministrativeActForm from './pages/rh/acts/AdministrativeActForm'
 import AdministrativeActs from './pages/rh/acts/AdministrativeActs'
 
@@ -24,10 +22,8 @@ import EmployeeList from './pages/rh/EmployeeList'
 import AddEmployee from './pages/rh/AddEmployee'
 import EditEmployee from './pages/rh/EditEmployee'
 import RolesPermissions from './pages/rh/RolesPermissions'
-import Organigramme from './pages/rh/Organigramme'
 import Grades from './pages/rh/Grades'
 import AdminStatus from './pages/rh/AdminStatus'
-import Promotions from './pages/rh/Promotions'
 import PerformanceEval from './pages/rh/PerformanceEval'
 import EvalHistory from './pages/rh/EvalHistory'
 import CareerPath from './pages/rh/CareerPath'
@@ -39,6 +35,7 @@ import CreateDocument from './pages/rh/CreateDocument'
 import NotificationsPage from './pages/rh/NotificationsPage'
 import HRReports from './pages/rh/HRReports'
 import Statistics from './pages/rh/Statistics'
+import SystemHealth from './pages/rh/SystemHealth'
 
 // Veterinary Pages
 import VetDashboard from './pages/veterinary/Dashboard'
@@ -234,12 +231,9 @@ const App = () => {
               <Route path="rh/employees" element={<EmployeeList />} />
               <Route path="rh/employees/add" element={<AddEmployee />} />
               <Route path="rh/employees/edit/:id" element={<EditEmployee />} />
-              <Route path="rh/recrutement" element={<Recruitment />} />
               <Route path="rh/roles" element={<RolesPermissions />} />
-              <Route path="rh/organigramme" element={<Organigramme />} />
               <Route path="rh/grades" element={<Grades />} />
               <Route path="rh/admin-status" element={<AdminStatus />} />
-              <Route path="rh/promotions" element={<Promotions />} />
               <Route path="rh/performance" element={<PerformanceEval />} />
               <Route path="rh/eval-history" element={<EvalHistory />} />
               <Route path="rh/career-path" element={<CareerPath />} />
@@ -247,8 +241,8 @@ const App = () => {
               <Route path="rh/documents" element={<AdminDocuments />} />
               <Route path="rh/documents/create" element={<CreateDocument />} />
               <Route path="rh/notifications" element={<NotificationsPage />} />
-              <Route path="rh/reports" element={<HRReports />} />
               <Route path="rh/statistics" element={<Statistics />} />
+              <Route path="rh/system-health" element={<SystemHealth />} />
               <Route path="rh/acts" element={<AdministrativeActs />} />
               <Route path="rh/acts/new" element={<AdministrativeActForm />} />
               <Route path="rh/acts/create/:type" element={<AdministrativeActForm />} />
@@ -313,9 +307,6 @@ const App = () => {
               <Route path="nurse/notifications" element={<NurseNotifications />} />
             </Route>
 
-            <Route path="formation"   element={<Training />} />
-            <Route path="carriere"    element={<Career />} />
-            <Route path="rapports"     element={<Reports />} />
             <Route path="parametres"  element={<Settings />} />
           </Route>
 

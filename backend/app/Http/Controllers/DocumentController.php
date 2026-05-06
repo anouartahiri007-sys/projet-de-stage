@@ -10,32 +10,49 @@ use Illuminate\Support\Facades\Storage;
 class DocumentController extends Controller
 {
     /**
-     * Upload a document for a specific candidature.
+     * List official documents.
+     */
+    public function index()
+    {
+        return response()->json(Document::whereNull('candidature_id')->latest()->get());
+    }
+
+    /**
+     * Upload a document (RH or Candidate).
      */
     public function upload(Request $request)
     {
-        // Enforce 5MB limit
         $request->validate([
-            'candidature_id' => 'required|exists:candidatures,id',
-            'document_type' => 'required|string|in:cv,cin,diplome,autre',
-            'file' => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // 5MB Limit = 5120 KB
+            'candidature_id' => 'nullable|exists:candidatures,id',
+            'document_type' => 'required|string',
+            'file' => 'required|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // 10MB
         ]);
 
-        $candidature = Candidature::findOrFail($request->candidature_id);
-        
-        $path = $request->file('file')->store('documents', 'local');
+        $path = $request->file('file')->store('documents', 'public');
 
         $document = Document::create([
-            'candidature_id' => $candidature->id,
+            'candidature_id' => $request->candidature_id,
             'name' => $request->file('file')->getClientOriginalName(),
             'file_path' => $path,
             'document_type' => $request->document_type,
-            'is_verified' => false
+            'is_verified' => true
         ]);
 
         return response()->json([
-            'message' => 'Document uploaded securely.',
+            'message' => 'Document uploaded successfully.',
             'document' => $document
         ], 201);
+    }
+
+    /**
+     * Download a specific document.
+     */
+    public function download(Document $document)
+    {
+        if (!Storage::disk('public')->exists($document->file_path)) {
+            return response()->json(['message' => 'File not found on server.'], 404);
+        }
+
+        return Storage::disk('public')->download($document->file_path, $document->name);
     }
 }

@@ -190,6 +190,21 @@ class FonctionnaireController extends Controller
         }
     }
 
+    public function downloadOnboardingPdf($id)
+    {
+        $fonctionnaire = Fonctionnaire::findOrFail($id);
+        $pdfFileName = 'onboarding_' . $fonctionnaire->matricule . '.pdf';
+        $pdfPath = storage_path('app/public/documents/rh/' . $pdfFileName);
+
+        if (!file_exists($pdfPath)) {
+            return response()->json(['message' => 'PDF not found'], 404);
+        }
+
+        return response()->download($pdfPath, $pdfFileName, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
     public function destroy($id)
     {
         $fonctionnaire = Fonctionnaire::findOrFail($id);
